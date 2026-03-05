@@ -1,7 +1,7 @@
 [
   {
-    "id": "table_CM4001A_p4_0",
-    "product": "CM4001A",
+    "id": "table_CM4001_p4_0",
+    "product": "CM4001",
     "pdf": "CM4001A966-01.pdf",
     "page": 4,
     "section": "**ES**",
@@ -26,8 +26,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4001A_p8_0",
-    "product": "CM4001A",
+    "id": "table_CM4001_p8_0",
+    "product": "CM4001",
     "pdf": "CM4001A966-01.pdf",
     "page": 8,
     "section": "EJEMPLO: mediciones en tableros de distribución (incluidos medidores secundarios), paneles",
@@ -76,8 +76,8 @@
     "row_count": 9
   },
   {
-    "id": "table_CM4001A_p15_0",
-    "product": "CM4001A",
+    "id": "table_CM4001_p15_0",
+    "product": "CM4001",
     "pdf": "CM4001A966-01.pdf",
     "page": 15,
     "section": "**Función de retención (HOLD)**",
@@ -116,8 +116,8 @@
     "row_count": 5
   },
   {
-    "id": "table_CM4001A_p17_0",
-    "product": "CM4001A",
+    "id": "table_CM4001_p17_0",
+    "product": "CM4001",
     "pdf": "CM4001A966-01.pdf",
     "page": 17,
     "section": "Si cambia del rango automático al modo MAX o MIN, el rango se fija en el rango actualmente",
@@ -141,8 +141,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4001A_p18_0",
-    "product": "CM4001A",
+    "id": "table_CM4001_p18_0",
+    "product": "CM4001",
     "pdf": "CM4001A966-01.pdf",
     "page": 18,
     "section": "**Medición de la corriente de entrada (AC INRUSH)**",
@@ -166,8 +166,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4001A_p25_0",
-    "product": "CM4001A",
+    "id": "table_CM4001_p25_0",
+    "product": "CM4001",
     "pdf": "CM4001A966-01.pdf",
     "page": 25,
     "section": "**Función de comunicación inalámbrica**",
@@ -198,8 +198,8 @@
     "row_count": 6
   },
   {
-    "id": "table_CM4001A_p26_0",
-    "product": "CM4001A",
+    "id": "table_CM4001_p26_0",
+    "product": "CM4001",
     "pdf": "CM4001A966-01.pdf",
     "page": 26,
     "section": "Función de comunicación inalámbrica",
@@ -216,8 +216,8 @@
     "row_count": 1
   },
   {
-    "id": "table_CM4002A_p3_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p3_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 3,
     "section": "CM4002A964-02 (A961-03)",
@@ -258,8 +258,8 @@
     "row_count": 7
   },
   {
-    "id": "table_CM4002A_p13_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p13_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 13,
     "section": "El instrumento está diseñado en función del",
@@ -290,8 +290,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4002A_p14_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p14_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 14,
     "section": "Notaciones",
@@ -314,21 +314,11 @@
       },
       {
         "Símbolos": "Indica el límite del campo magnético externo especifcado por la IEC/EN 61557-13 Clase 2.<br>El uso del instrumento en un campo magnético externo que supere los 30 A/m está fuera del<br>rango de la IEC/EN 61557-13 Clase 2."
-      }
-    ],
-    "row_count": 5
-  },
-  {
-    "id": "table_CM4002A_p14_1",
-    "product": "CM4002A",
-    "pdf": "CM4002A964-02_Manual_ES.pdf",
-    "page": 14,
-    "section": "Notaciones",
-    "headers": [
-      "Símbolos",
-      "de distintas normas"
-    ],
-    "rows": [
+      },
+      {
+        "Símbolos": "Símbolos",
+        "que aparecen en el instrumento": "de distintas normas"
+      },
       {
         "Símbolos": "Indica la Directiva sobre residuos de aparatos eléctricos y electrónicos (Directiva RAEE) en<br>los estados miembros de la UE."
       },
@@ -336,11 +326,11 @@
         "Símbolos": "Indica que el producto cumple con los reglamentos requeridos por la Directiva de la UE."
       }
     ],
-    "row_count": 2
+    "row_count": 8
   },
   {
-    "id": "table_CM4002A_p15_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p15_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 15,
     "section": "Notaciones",
@@ -357,8 +347,8 @@
     "row_count": 1
   },
   {
-    "id": "table_CM4002A_p16_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p16_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 16,
     "section": "Notaciones",
@@ -395,8 +385,8 @@
     "row_count": 4
   },
   {
-    "id": "table_CM4002A_p16_1",
-    "product": "CM4002A",
+    "id": "table_CM4002_p16_1",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 16,
     "section": "Notaciones",
@@ -417,8 +407,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4002A_p25_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p25_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 25,
     "section": "Parte delantera Parte trasera",
@@ -463,8 +453,8 @@
     "row_count": 8
   },
   {
-    "id": "table_CM4002A_p26_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p26_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 26,
     "section": "Nombres de las piezas",
@@ -498,8 +488,8 @@
     "row_count": 5
   },
   {
-    "id": "table_CM4002A_p27_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p27_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 27,
     "section": "Teclas de funcionamiento",
@@ -527,8 +517,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4002A_p28_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p28_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 28,
     "section": "Teclas de funcionamiento",
@@ -545,69 +535,59 @@
       {
         "1 2<br>8<br>9": "al<br><br>**10**<br>**9**",
         "3 4 5 6": "**14**"
+      },
+      {
+        "1 2<br>8<br>9": "1",
+        "3 4 5 6": "Col2",
+        "7<br>11": "Función de comunicación inalámbrica",
+        "col_3": "Col4",
+        "col_4": "p. 56"
+      },
+      {
+        "1 2<br>8<br>9": "**2**",
+        "3 4 5 6": "**COMP**",
+        "7<br>11": "Comparador",
+        "col_3": "Comparador",
+        "col_4": "p. 46"
+      },
+      {
+        "1 2<br>8<br>9": "**3**",
+        "3 4 5 6": "**EVENT**",
+        "7<br>11": "Registro de evento simple<br>Registro de eventos",
+        "col_3": "Registro de evento simple<br>Registro de eventos",
+        "col_4": "p. 47<br>p. 60"
+      },
+      {
+        "1 2<br>8<br>9": "**4**",
+        "3 4 5 6": "**INRUSH**",
+        "7<br>11": "Medición de la corriente de entrada (AC INRUSH)",
+        "col_3": "Medición de la corriente de entrada (AC INRUSH)",
+        "col_4": "p. 45"
+      },
+      {
+        "1 2<br>8<br>9": "**5**",
+        "3 4 5 6": "**APS**",
+        "7<br>11": "Ahorro automático de energía",
+        "col_3": "Ahorro automático de energía",
+        "col_4": "p. 53"
+      },
+      {
+        "1 2<br>8<br>9": "**6**",
+        "3 4 5 6": "Fuente de alimentación externa**CM4003**",
+        "7<br>11": "p. 29"
+      },
+      {
+        "1 2<br>8<br>9": "**7**",
+        "3 4 5 6": "Carga restante de las pilas",
+        "7<br>11": "Carga restante de las pilas",
+        "col_3": "p. 23"
       }
     ],
-    "row_count": 2
+    "row_count": 9
   },
   {
-    "id": "table_CM4002A_p28_1",
-    "product": "CM4002A",
-    "pdf": "CM4002A964-02_Manual_ES.pdf",
-    "page": 28,
-    "section": "Teclas de funcionamiento",
-    "headers": [
-      "1",
-      "Col2",
-      "Función de comunicación inalámbrica",
-      "Col4",
-      "p. 56"
-    ],
-    "rows": [
-      {
-        "1": "**2**",
-        "Col2": "**COMP**",
-        "Función de comunicación inalámbrica": "Comparador",
-        "Col4": "Comparador",
-        "p. 56": "p. 46"
-      },
-      {
-        "1": "**3**",
-        "Col2": "**EVENT**",
-        "Función de comunicación inalámbrica": "Registro de evento simple<br>Registro de eventos",
-        "Col4": "Registro de evento simple<br>Registro de eventos",
-        "p. 56": "p. 47<br>p. 60"
-      },
-      {
-        "1": "**4**",
-        "Col2": "**INRUSH**",
-        "Función de comunicación inalámbrica": "Medición de la corriente de entrada (AC INRUSH)",
-        "Col4": "Medición de la corriente de entrada (AC INRUSH)",
-        "p. 56": "p. 45"
-      },
-      {
-        "1": "**5**",
-        "Col2": "**APS**",
-        "Función de comunicación inalámbrica": "Ahorro automático de energía",
-        "Col4": "Ahorro automático de energía",
-        "p. 56": "p. 53"
-      },
-      {
-        "1": "**6**",
-        "Col2": "Fuente de alimentación externa**CM4003**",
-        "Función de comunicación inalámbrica": "p. 29"
-      },
-      {
-        "1": "**7**",
-        "Col2": "Carga restante de las pilas",
-        "Función de comunicación inalámbrica": "Carga restante de las pilas",
-        "Col4": "p. 23"
-      }
-    ],
-    "row_count": 6
-  },
-  {
-    "id": "table_CM4002A_p29_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p29_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 29,
     "section": "Panel de visualización",
@@ -729,8 +709,8 @@
     "row_count": 14
   },
   {
-    "id": "table_CM4002A_p31_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p31_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 31,
     "section": "Panel de visualización",
@@ -756,8 +736,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4002A_p38_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p38_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 38,
     "section": "4 [Conecte el otro extremo del L9510 al adaptador de CA ]",
@@ -786,8 +766,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4002A_p42_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p42_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 42,
     "section": "Medición de la corriente de fuga",
@@ -814,8 +794,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4002A_p47_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p47_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 47,
     "section": "Independientemente de si el cable es monofásico o trifásico, cuando sujete dos o",
@@ -862,8 +842,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4002A_p51_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p51_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 51,
     "section": "Comienzo",
@@ -907,8 +887,8 @@
     "row_count": 6
   },
   {
-    "id": "table_CM4002A_p52_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p52_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 52,
     "section": "Función de retención (HOLD)",
@@ -936,8 +916,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4002A_p53_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p53_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 53,
     "section": "Valor medido presente",
@@ -962,8 +942,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4002A_p57_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p57_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 57,
     "section": "5 Registro en curso Es posible que un evento con una duración de menos de 400 ms no",
@@ -980,8 +960,8 @@
     "row_count": 1
   },
   {
-    "id": "table_CM4002A_p58_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p58_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 58,
     "section": "Utilice una fuente de alimentación externa para la medición a largo plazo. (p. 29)",
@@ -1038,8 +1018,8 @@
     "row_count": 7
   },
   {
-    "id": "table_CM4002A_p58_1",
-    "product": "CM4002A",
+    "id": "table_CM4002_p58_1",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 58,
     "section": "Utilice una fuente de alimentación externa para la medición a largo plazo. (p. 29)",
@@ -1056,8 +1036,8 @@
     "row_count": 1
   },
   {
-    "id": "table_CM4002A_p69_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p69_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 69,
     "section": "Cuando inicie otra sesión de registro de",
@@ -1074,8 +1054,8 @@
     "row_count": 1
   },
   {
-    "id": "table_CM4002A_p73_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p73_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 73,
     "section": "Función de comunicación inalámbrica",
@@ -1126,8 +1106,8 @@
     "row_count": 6
   },
   {
-    "id": "table_CM4002A_p74_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p74_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 74,
     "section": "Combinaciones de las teclas de encendido",
@@ -1160,8 +1140,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4002A_p75_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p75_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 75,
     "section": "Combinaciones de las teclas de encendido",
@@ -1186,8 +1166,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4002A_p76_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p76_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 76,
     "section": "**3 Especificaciones**",
@@ -1236,8 +1216,8 @@
     "row_count": 7
   },
   {
-    "id": "table_CM4002A_p78_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p78_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 78,
     "section": "Especificaciones generales",
@@ -1281,8 +1261,8 @@
     "row_count": 6
   },
   {
-    "id": "table_CM4002A_p78_1",
-    "product": "CM4002A",
+    "id": "table_CM4002_p78_1",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 78,
     "section": "Especificaciones generales",
@@ -1311,8 +1291,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4002A_p79_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p79_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 79,
     "section": "Especificaciones de medición, entrada y salida",
@@ -1361,8 +1341,8 @@
     "row_count": 7
   },
   {
-    "id": "table_CM4002A_p80_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p80_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 80,
     "section": "Especificaciones de medición, entrada y salida",
@@ -1406,8 +1386,8 @@
     "row_count": 6
   },
   {
-    "id": "table_CM4002A_p82_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p82_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 82,
     "section": "Especificaciones de medición, entrada y salida",
@@ -1514,8 +1494,8 @@
     "row_count": 13
   },
   {
-    "id": "table_CM4002A_p83_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p83_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 83,
     "section": "Especificaciones de medición, entrada y salida",
@@ -1622,8 +1602,8 @@
     "row_count": 13
   },
   {
-    "id": "table_CM4002A_p84_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p84_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 84,
     "section": "Especificaciones de medición, entrada y salida",
@@ -1730,8 +1710,8 @@
     "row_count": 13
   },
   {
-    "id": "table_CM4002A_p85_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p85_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 85,
     "section": "Especificaciones de medición, entrada y salida",
@@ -1838,8 +1818,8 @@
     "row_count": 13
   },
   {
-    "id": "table_CM4002A_p86_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p86_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 86,
     "section": "Especificaciones de medición, entrada y salida",
@@ -1878,8 +1858,8 @@
     "row_count": 4
   },
   {
-    "id": "table_CM4002A_p86_1",
-    "product": "CM4002A",
+    "id": "table_CM4002_p86_1",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 86,
     "section": "Especificaciones de medición, entrada y salida",
@@ -1918,8 +1898,8 @@
     "row_count": 4
   },
   {
-    "id": "table_CM4002A_p86_2",
-    "product": "CM4002A",
+    "id": "table_CM4002_p86_2",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 86,
     "section": "Especificaciones de medición, entrada y salida",
@@ -1943,8 +1923,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4002A_p87_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p87_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 87,
     "section": "Especificaciones de medición, entrada y salida",
@@ -1989,8 +1969,8 @@
     "row_count": 8
   },
   {
-    "id": "table_CM4002A_p88_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p88_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 88,
     "section": "Especificaciones de medición, entrada y salida",
@@ -2047,8 +2027,8 @@
     "row_count": 11
   },
   {
-    "id": "table_CM4002A_p91_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p91_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 91,
     "section": "Pase un paño seco suave con cuidado sobre las superficies del núcleo de las",
@@ -2082,8 +2062,8 @@
     "row_count": 4
   },
   {
-    "id": "table_CM4002A_p92_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p92_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 92,
     "section": "Si se sospecha que hay daños, lea la sección “Resolución de problemas” para corregir el",
@@ -2127,8 +2107,8 @@
     "row_count": 6
   },
   {
-    "id": "table_CM4002A_p93_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p93_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 93,
     "section": "Resolución de problemas",
@@ -2167,8 +2147,8 @@
     "row_count": 5
   },
   {
-    "id": "table_CM4002A_p94_0",
-    "product": "CM4002A",
+    "id": "table_CM4002_p94_0",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 94,
     "section": "Resolución de problemas",
@@ -2192,8 +2172,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4002A_p94_1",
-    "product": "CM4002A",
+    "id": "table_CM4002_p94_1",
+    "product": "CM4002",
     "pdf": "CM4002A964-02_Manual_ES.pdf",
     "page": 94,
     "section": "Resolución de problemas",
@@ -2227,8 +2207,8 @@
     "row_count": 4
   },
   {
-    "id": "table_FT6380B_p21_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p21_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 21,
     "section": "The instrument’s internal memory can record up to 2,000 measured",
@@ -2253,8 +2233,8 @@
     "row_count": 3
   },
   {
-    "id": "table_FT6380B_p23_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p23_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 23,
     "section": "Do not remove this sticker as the",
@@ -2288,8 +2268,8 @@
     "row_count": 7
   },
   {
-    "id": "table_FT6380B_p24_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p24_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 24,
     "section": "Do not remove this sticker as the",
@@ -2332,8 +2312,8 @@
     "row_count": 10
   },
   {
-    "id": "table_FT6380B_p25_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p25_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 25,
     "section": "Do not remove this sticker as the",
@@ -2352,8 +2332,8 @@
     "row_count": 2
   },
   {
-    "id": "table_FT6380B_p28_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p28_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 28,
     "section": "Thread the strap through the strap hole as shown in the following diagram:",
@@ -2375,8 +2355,8 @@
     "row_count": 3
   },
   {
-    "id": "table_FT6380B_p32_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p32_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 32,
     "section": "Start the following procedure after reading the safety precautions.(p.23)",
@@ -2397,8 +2377,8 @@
     "row_count": 2
   },
   {
-    "id": "table_FT6380B_p62_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p62_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 62,
     "section": "External magnetic field:",
@@ -2462,8 +2442,8 @@
     "row_count": 10
   },
   {
-    "id": "table_FT6380B_p65_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p65_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 65,
     "section": "Filter off/ Filter on: 1 s ±0.5 s or less",
@@ -2563,8 +2543,8 @@
     "row_count": 12
   },
   {
-    "id": "table_FT6380B_p69_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p69_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 69,
     "section": "**Maintenance and** **Service Chapter 4**",
@@ -2593,8 +2573,8 @@
     "row_count": 3
   },
   {
-    "id": "table_FT6380B_p70_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p70_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 70,
     "section": "If damage is suspected, check the “Before returning for",
@@ -2638,8 +2618,8 @@
     "row_count": 6
   },
   {
-    "id": "table_FT6380B_p93_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p93_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 93,
     "section": "La función de comunicación inalámbrica le permite a su dispositivo",
@@ -2664,8 +2644,8 @@
     "row_count": 3
   },
   {
-    "id": "table_FT6380B_p95_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p95_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 95,
     "section": "No retire este adhesivo ya que el",
@@ -2699,8 +2679,8 @@
     "row_count": 7
   },
   {
-    "id": "table_FT6380B_p96_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p96_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 96,
     "section": "No retire este adhesivo ya que el",
@@ -2743,8 +2723,8 @@
     "row_count": 10
   },
   {
-    "id": "table_FT6380B_p97_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p97_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 97,
     "section": "No retire este adhesivo ya que el",
@@ -2763,8 +2743,8 @@
     "row_count": 2
   },
   {
-    "id": "table_FT6380B_p100_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p100_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 100,
     "section": "Pase la correa por el orificio de la correa, como se muestra en el",
@@ -2789,8 +2769,8 @@
     "row_count": 4
   },
   {
-    "id": "table_FT6380B_p104_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p104_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 104,
     "section": "Antes de utilizar el instrumento por vez primera, compruebe que",
@@ -2811,8 +2791,8 @@
     "row_count": 2
   },
   {
-    "id": "table_FT6380B_p134_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p134_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 134,
     "section": "Campo magnético externo:",
@@ -2876,8 +2856,8 @@
     "row_count": 10
   },
   {
-    "id": "table_FT6380B_p137_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p137_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 137,
     "section": "Filtro activado/desactivado: 1 s ±0,5 s o menos",
@@ -2977,8 +2957,8 @@
     "row_count": 12
   },
   {
-    "id": "table_FT6380B_p141_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p141_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 141,
     "section": "**Mantenimiento y** **servicio Capítulo 4**",
@@ -3007,8 +2987,8 @@
     "row_count": 3
   },
   {
-    "id": "table_FT6380B_p142_0",
-    "product": "FT6380B",
+    "id": "table_FT6380_p142_0",
+    "product": "FT6380",
     "pdf": "FT6380B983-00.pdf",
     "page": 142,
     "section": "Si parece que presenta algún daño, consulte la sección",
@@ -3052,8 +3032,8 @@
     "row_count": 6
   },
   {
-    "id": "table_CM4371_p9_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p9_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 9,
     "section": "Bluetooth SIG, Inc. y cualquier uso de estas marcas por parte de Hioki E.E. Corporation se",
@@ -3083,8 +3063,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4371_p10_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p10_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 10,
     "section": "Notaciones",
@@ -3118,8 +3098,8 @@
     "row_count": 7
   },
   {
-    "id": "table_CM4371_p12_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p12_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 12,
     "section": "Notaciones",
@@ -3136,8 +3116,8 @@
     "row_count": 1
   },
   {
-    "id": "table_CM4371_p12_1",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p12_1",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 12,
     "section": "Notaciones",
@@ -3158,8 +3138,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4371_p15_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p15_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 15,
     "section": "Opciones",
@@ -3199,8 +3179,8 @@
     "row_count": 7
   },
   {
-    "id": "table_CM4371_p26_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p26_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 26,
     "section": "**1 Aspectos generales**",
@@ -3217,69 +3197,73 @@
     "row_count": 1
   },
   {
-    "id": "table_CM4371_p26_2",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p26_1",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 26,
     "section": "**1 Aspectos generales**",
     "headers": [
-      "1 Pulsador de funcionamiento",
-      "Col2",
-      "Col3",
-      "Col4"
+      "Col1",
+      "Col2"
     ],
     "rows": [
       {
-        "1 Pulsador de funcionamiento": "**2**<br>Tecla**Fn** (le permite elegir una función)",
+        "Col1": "1 Pulsador de funcionamiento",
+        "Col2": "Col2",
+        "col_2": "Col3",
+        "col_3": "Col4"
+      },
+      {
+        "Col1": "**2**<br>Tecla**Fn** (le permite elegir una función)",
         "Col2": "**2**<br>Tecla**Fn** (le permite elegir una función)",
-        "Col3": "**2**<br>Tecla**Fn** (le permite elegir una función)",
-        "Col4": "**2**<br>Tecla**Fn** (le permite elegir una función)"
+        "col_2": "**2**<br>Tecla**Fn** (le permite elegir una función)",
+        "col_3": "**2**<br>Tecla**Fn** (le permite elegir una función)"
       },
       {
-        "1 Pulsador de funcionamiento": "**3**<br>Abrazaderas",
+        "Col1": "**3**<br>Abrazaderas",
         "Col2": "**3**<br>Abrazaderas",
-        "Col3": "**3**<br>Abrazaderas",
-        "Col4": "**3**<br>Abrazaderas"
+        "col_2": "**3**<br>Abrazaderas",
+        "col_3": "**3**<br>Abrazaderas"
       },
       {
-        "1 Pulsador de funcionamiento": "**4**<br>Barrera",
+        "Col1": "**4**<br>Barrera",
         "Col2": "**4**<br>Barrera",
-        "Col3": "**4**<br>Barrera",
-        "Col4": "**4**<br>Barrera"
+        "col_2": "**4**<br>Barrera",
+        "col_3": "**4**<br>Barrera"
       },
       {
-        "1 Pulsador de funcionamiento": "**5**<br>Número de serie (el número de serie se<br>compone de 9 dígitos. Los dos primeros<br>(por la izquierda) indican el año de<br>fabricación y los dos siguientes, el mes<br>",
+        "Col1": "**5**<br>Número de serie (el número de serie se<br>compone de 9 dígitos. Los dos primeros<br>(por la izquierda) indican el año de<br>fabricación y los dos siguientes, el mes<br>",
         "Col2": "**5**<br>Número de serie (el número de serie se<br>compone de 9 dígitos. Los dos primeros<br>(por la izquierda) indican el año de<br>fabricación y los dos siguientes, el mes<br>",
-        "Col3": "**5**<br>Número de serie (el número de serie se<br>compone de 9 dígitos. Los dos primeros<br>(por la izquierda) indican el año de<br>fabricación y los dos siguientes, el mes<br>",
-        "Col4": "**5**<br>Número de serie (el número de serie se<br>compone de 9 dígitos. Los dos primeros<br>(por la izquierda) indican el año de<br>fabricación y los dos siguientes, el mes<br>"
+        "col_2": "**5**<br>Número de serie (el número de serie se<br>compone de 9 dígitos. Los dos primeros<br>(por la izquierda) indican el año de<br>fabricación y los dos siguientes, el mes<br>",
+        "col_3": "**5**<br>Número de serie (el número de serie se<br>compone de 9 dígitos. Los dos primeros<br>(por la izquierda) indican el año de<br>fabricación y los dos siguientes, el mes<br>"
       },
       {
-        "1 Pulsador de funcionamiento": "de fabrica<br>**6**<br>Interruptor<br>Consulte “<br>medición”<br>**7**<br>Tecla**HOL**",
+        "Col1": "de fabrica<br>**6**<br>Interruptor<br>Consulte “<br>medición”<br>**7**<br>Tecla**HOL**",
         "Col2": "ión).<br> giratori<br> Lista de<br> (p. 19).<br>**D**",
-        "Col3": "o<br> las func",
-        "Col4": "iones de"
+        "col_2": "o<br> las func",
+        "col_3": "iones de"
       },
       {
-        "1 Pulsador de funcionamiento": "**8**<br>LCD<br>**9**<br>Tapa de las pil~~as~~",
+        "Col1": "**8**<br>LCD<br>**9**<br>Tapa de las pil~~as~~",
         "Col2": "**8**<br>LCD<br>**9**<br>Tapa de las pil~~as~~"
       },
       {
-        "1 Pulsador de funcionamiento": "**10**<br>Teclas de funciona<br><br>Terminales de me",
+        "Col1": "**10**<br>Teclas de funciona<br><br>Terminales de me",
         "Col2": "**10**<br>Teclas de funciona<br><br>Terminales de me",
-        "Col3": "miento<br> ición"
+        "col_2": "miento<br> ición"
       },
       {
-        "1 Pulsador de funcionamiento": "**11**<br> <br>**12**<br>Orifcio de la correa",
+        "Col1": "**11**<br> <br>**12**<br>Orifcio de la correa",
         "Col2": "**11**<br> <br>**12**<br>Orifcio de la correa",
-        "Col3": "**11**<br> <br>**12**<br>Orifcio de la correa",
-        "Col4": "**11**<br> <br>**12**<br>Orifcio de la correa"
+        "col_2": "**11**<br> <br>**12**<br>Orifcio de la correa",
+        "col_3": "**11**<br> <br>**12**<br>Orifcio de la correa"
       }
     ],
-    "row_count": 8
+    "row_count": 9
   },
   {
-    "id": "table_CM4371_p27_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p27_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 27,
     "section": "Nombres de las piezas",
@@ -3306,8 +3290,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4371_p37_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p37_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 37,
     "section": "Uso de las puntas de medición",
@@ -3331,8 +3315,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4371_p40_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p40_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 40,
     "section": "Uso de las puntas de medición",
@@ -3366,8 +3350,8 @@
     "row_count": 4
   },
   {
-    "id": "table_CM4371_p43_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p43_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 43,
     "section": "Valor",
@@ -3418,8 +3402,8 @@
     "row_count": 6
   },
   {
-    "id": "table_CM4371_p44_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p44_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 44,
     "section": "Medición de la corriente",
@@ -3458,8 +3442,8 @@
     "row_count": 4
   },
   {
-    "id": "table_CM4371_p49_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p49_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 49,
     "section": "Período de suceso de la corriente de entrada",
@@ -3475,8 +3459,8 @@
     "row_count": 1
   },
   {
-    "id": "table_CM4371_p53_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p53_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 53,
     "section": "Otras funciones de medición",
@@ -3495,8 +3479,8 @@
     "row_count": 1
   },
   {
-    "id": "table_CM4371_p56_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p56_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 56,
     "section": "Modo DC High V Probe",
@@ -3516,8 +3500,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4371_p63_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p63_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 63,
     "section": "Cuando comience otro registro de eventos, los",
@@ -3534,8 +3518,8 @@
     "row_count": 1
   },
   {
-    "id": "table_CM4371_p67_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p67_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 67,
     "section": "Si inicia GENNECT Cross sin cancelar el emparejamiento entre el dispositivo móvil y el",
@@ -3562,8 +3546,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4371_p68_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p68_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 68,
     "section": "Si inicia GENNECT Cross sin cancelar el emparejamiento entre el dispositivo móvil y el",
@@ -3590,8 +3574,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4371_p69_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p69_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 69,
     "section": "Si inicia GENNECT Cross sin cancelar el emparejamiento entre el dispositivo móvil y el",
@@ -3612,8 +3596,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4371_p70_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p70_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 70,
     "section": "**3 Especificaciones**",
@@ -3630,8 +3614,8 @@
     "row_count": 1
   },
   {
-    "id": "table_CM4371_p71_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p71_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 71,
     "section": "Especificaciones generales",
@@ -3684,8 +3668,8 @@
     "row_count": 10
   },
   {
-    "id": "table_CM4371_p72_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p72_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 72,
     "section": "Especificaciones generales",
@@ -3734,8 +3718,8 @@
     "row_count": 9
   },
   {
-    "id": "table_CM4371_p73_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p73_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 73,
     "section": "Cuando mida 100 A CA, con la pantalla LCD sin retroiluminar, valores de referencia a 23°C",
@@ -3764,8 +3748,8 @@
     "row_count": 4
   },
   {
-    "id": "table_CM4371_p73_1",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p73_1",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 73,
     "section": "Cuando mida 100 A CA, con la pantalla LCD sin retroiluminar, valores de referencia a 23°C",
@@ -3789,8 +3773,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4371_p74_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p74_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 74,
     "section": "Especificaciones de entrada, especificaciones de medición",
@@ -3844,8 +3828,8 @@
     "row_count": 8
   },
   {
-    "id": "table_CM4371_p75_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p75_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 75,
     "section": "Especificaciones de entrada, especificaciones de medición",
@@ -3882,8 +3866,8 @@
     "row_count": 6
   },
   {
-    "id": "table_CM4371_p78_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p78_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 78,
     "section": "Especificaciones de entrada, especificaciones de medición",
@@ -3937,8 +3921,8 @@
     "row_count": 8
   },
   {
-    "id": "table_CM4371_p79_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p79_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 79,
     "section": "Especificaciones de entrada, especificaciones de medición",
@@ -3982,8 +3966,8 @@
     "row_count": 6
   },
   {
-    "id": "table_CM4371_p80_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p80_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 80,
     "section": "Especificaciones de entrada, especificaciones de medición",
@@ -4037,8 +4021,8 @@
     "row_count": 8
   },
   {
-    "id": "table_CM4371_p82_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p82_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 82,
     "section": "P2010",
@@ -4092,8 +4076,8 @@
     "row_count": 8
   },
   {
-    "id": "table_CM4371_p83_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p83_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 83,
     "section": "Especificaciones de entrada, especificaciones de medición",
@@ -4158,8 +4142,8 @@
     "row_count": 7
   },
   {
-    "id": "table_CM4371_p84_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p84_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 84,
     "section": "Cuando se detecta CC:",
@@ -4266,8 +4250,8 @@
     "row_count": 13
   },
   {
-    "id": "table_CM4371_p85_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p85_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 85,
     "section": "Tabla de precisión",
@@ -4353,8 +4337,8 @@
     "row_count": 10
   },
   {
-    "id": "table_CM4371_p86_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p86_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 86,
     "section": "Tabla de precisión",
@@ -4423,8 +4407,8 @@
     "row_count": 9
   },
   {
-    "id": "table_CM4371_p87_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p87_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 87,
     "section": "Tabla de precisión",
@@ -4493,8 +4477,8 @@
     "row_count": 9
   },
   {
-    "id": "table_CM4371_p87_1",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p87_1",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 87,
     "section": "Tabla de precisión",
@@ -4545,8 +4529,8 @@
     "row_count": 6
   },
   {
-    "id": "table_CM4371_p88_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p88_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 88,
     "section": "Tabla de precisión",
@@ -4570,8 +4554,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4371_p88_1",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p88_1",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 88,
     "section": "Tabla de precisión",
@@ -4600,8 +4584,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4371_p88_2",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p88_2",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 88,
     "section": "Tabla de precisión",
@@ -4625,8 +4609,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4371_p89_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p89_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 89,
     "section": "Tabla de precisión",
@@ -4655,8 +4639,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4371_p89_1",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p89_1",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 89,
     "section": "Tabla de precisión",
@@ -4685,8 +4669,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4371_p89_2",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p89_2",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 89,
     "section": "Tabla de precisión",
@@ -4710,8 +4694,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4371_p90_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p90_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 90,
     "section": "Tabla de precisión",
@@ -4776,8 +4760,8 @@
     "row_count": 7
   },
   {
-    "id": "table_CM4371_p91_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p91_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 91,
     "section": "Tabla de precisión",
@@ -4884,8 +4868,8 @@
     "row_count": 13
   },
   {
-    "id": "table_CM4371_p92_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p92_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 92,
     "section": "Tabla de precisión",
@@ -4971,8 +4955,8 @@
     "row_count": 10
   },
   {
-    "id": "table_CM4371_p93_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p93_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 93,
     "section": "Tabla de precisión",
@@ -5041,8 +5025,8 @@
     "row_count": 9
   },
   {
-    "id": "table_CM4371_p94_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p94_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 94,
     "section": "Tabla de precisión",
@@ -5111,8 +5095,8 @@
     "row_count": 9
   },
   {
-    "id": "table_CM4371_p94_1",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p94_1",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 94,
     "section": "Tabla de precisión",
@@ -5163,8 +5147,8 @@
     "row_count": 6
   },
   {
-    "id": "table_CM4371_p95_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p95_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 95,
     "section": "Tabla de precisión",
@@ -5193,8 +5177,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4371_p95_1",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p95_1",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 95,
     "section": "Tabla de precisión",
@@ -5221,8 +5205,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4371_p96_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p96_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 96,
     "section": "Tabla de precisión",
@@ -5255,8 +5239,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4371_p96_1",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p96_1",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 96,
     "section": "Tabla de precisión",
@@ -5277,8 +5261,8 @@
     "row_count": 1
   },
   {
-    "id": "table_CM4371_p97_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p97_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 97,
     "section": "Tabla de precisión",
@@ -5311,8 +5295,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4371_p97_1",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p97_1",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 97,
     "section": "Tabla de precisión",
@@ -5345,8 +5329,8 @@
     "row_count": 3
   },
   {
-    "id": "table_CM4371_p97_2",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p97_2",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 97,
     "section": "Tabla de precisión",
@@ -5373,8 +5357,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4371_p98_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p98_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 98,
     "section": "Tabla de precisión",
@@ -5447,8 +5431,8 @@
     "row_count": 7
   },
   {
-    "id": "table_CM4371_p99_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p99_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 99,
     "section": "Tabla de precisión",
@@ -5545,8 +5529,8 @@
     "row_count": 10
   },
   {
-    "id": "table_CM4371_p100_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p100_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 100,
     "section": "Tabla de precisión",
@@ -5633,8 +5617,8 @@
     "row_count": 12
   },
   {
-    "id": "table_CM4371_p101_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p101_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 101,
     "section": "Tabla de precisión",
@@ -5679,8 +5663,8 @@
     "row_count": 5
   },
   {
-    "id": "table_CM4371_p102_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p102_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 102,
     "section": "Tabla de precisión",
@@ -5719,8 +5703,8 @@
     "row_count": 5
   },
   {
-    "id": "table_CM4371_p103_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p103_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 103,
     "section": "Tabla de precisión",
@@ -5817,8 +5801,8 @@
     "row_count": 10
   },
   {
-    "id": "table_CM4371_p104_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p104_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 104,
     "section": "Tabla de precisión",
@@ -5891,8 +5875,8 @@
     "row_count": 7
   },
   {
-    "id": "table_CM4371_p105_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p105_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 105,
     "section": "Tabla de precisión",
@@ -5979,8 +5963,8 @@
     "row_count": 12
   },
   {
-    "id": "table_CM4371_p106_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p106_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 106,
     "section": "Tabla de precisión",
@@ -6007,8 +5991,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4371_p106_1",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p106_1",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 106,
     "section": "Tabla de precisión",
@@ -6029,8 +6013,8 @@
     "row_count": 1
   },
   {
-    "id": "table_CM4371_p107_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p107_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 107,
     "section": "Tabla de precisión",
@@ -6075,8 +6059,8 @@
     "row_count": 5
   },
   {
-    "id": "table_CM4371_p107_1",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p107_1",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 107,
     "section": "Tabla de precisión",
@@ -6097,8 +6081,8 @@
     "row_count": 1
   },
   {
-    "id": "table_CM4371_p108_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p108_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 108,
     "section": "Tabla de precisión",
@@ -6137,8 +6121,8 @@
     "row_count": 4
   },
   {
-    "id": "table_CM4371_p108_1",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p108_1",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 108,
     "section": "Tabla de precisión",
@@ -6165,8 +6149,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4371_p109_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p109_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 109,
     "section": "Tabla de precisión",
@@ -6190,8 +6174,8 @@
     "row_count": 2
   },
   {
-    "id": "table_CM4371_p110_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p110_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 110,
     "section": "Tabla de precisión",
@@ -6256,8 +6240,8 @@
     "row_count": 7
   },
   {
-    "id": "table_CM4371_p111_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p111_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 111,
     "section": "Tabla de precisión",
@@ -6322,8 +6306,8 @@
     "row_count": 7
   },
   {
-    "id": "table_CM4371_p112_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p112_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 112,
     "section": "Tabla de precisión",
@@ -6388,8 +6372,8 @@
     "row_count": 7
   },
   {
-    "id": "table_CM4371_p113_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p113_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 113,
     "section": "Tabla de precisión",
@@ -6454,8 +6438,8 @@
     "row_count": 7
   },
   {
-    "id": "table_CM4371_p114_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p114_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 114,
     "section": "Tabla de precisión",
@@ -6520,8 +6504,8 @@
     "row_count": 7
   },
   {
-    "id": "table_CM4371_p115_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p115_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 115,
     "section": "Tabla de precisión",
@@ -6565,8 +6549,8 @@
     "row_count": 6
   },
   {
-    "id": "table_CM4371_p116_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p116_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 116,
     "section": "**4 Mantenimiento y servicio**",
@@ -6605,8 +6589,8 @@
     "row_count": 5
   },
   {
-    "id": "table_CM4371_p117_0",
-    "product": "CM4371",
+    "id": "table_CM4371-50_p117_0",
+    "product": "CM4371-50",
     "pdf": "hioki_CM4371-50_CM4373-50_CM4375-50_manual.pdf",
     "page": 117,
     "section": "Resolución de problemas",

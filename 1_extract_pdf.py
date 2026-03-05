@@ -36,8 +36,9 @@ except ImportError:
 def extract_product_name(pdf_path: Path) -> str:
     """Extrae nombre del producto del nombre del archivo o primera página."""
     stem = pdf_path.stem.upper()
-    # Patrones comunes HIOKI: CM4001, PW3337, DT4282, etc.
-    m = re.search(r'([A-Z]{1,3}\d{3,5}[A-Z]?)', stem)
+    # Patrones comunes HIOKI: CM4001, PW3337, DT4282, FT6380, CM4371-50, etc.
+    # Evita tomar la 'A' o 'B' de los códigos del manual (ej. A966-01)
+    m = re.search(r'([A-Z]{2,4}\d{3,5}(?:-\d{2})?)', stem)
     if m:
         return m.group(1)
     return stem[:20]
@@ -47,11 +48,39 @@ def clean_text(text: str) -> str:
     text = HEADER_NOISE.sub('', text)
     lines = []
     for line in text.split('\n'):
+        # Filtrar líneas de índice (muchos puntos consecutivos o espacios)
+        if re.search(r'\.{5,}', line):
+            continue
         line = re.sub(r'[ \t]{2,}', ' ', line).strip()
-        lines.append(line)
+        if line:
+            lines.append(line)
     text = '\n'.join(lines)
     text = re.sub(r'\n{3,}', '\n\n', text)
     return text.strip()
+
+def is_junk_chunk(body: str) -> bool:
+    """Detecta si un chunk es texto basura como un disclaimer legal o un índice residual."""
+    lower_body = body.lower()
+    
+    # 1. Disclaimers o legales repetitivos
+    disclaimers = [
+        "contenido del manual está sujeto a cambios",
+        "puede descargar la versión más reciente",
+        "marcas registradas y nombres comerciales",
+        "excel es una marca",
+        "palabra bluetooth",
+        "registro de productos",
+        "este manual se ha escrito para"
+    ]
+    for d in disclaimers:
+        if d in lower_body:
+            return True
+            
+    # 2. Índice residual
+    if lower_body.count('.....') > 1:
+        return True
+        
+    return False
 
 
 def detect_section_title(line: str) -> bool:
@@ -81,7 +110,8 @@ def text_to_chunks(text: str, page_num: int, product: str, pdf_name: str) -> lis
     def save_chunk():
         nonlocal chunk_idx, current_text
         body = current_text.strip()
-        if len(body) >= MIN_CHUNK_LEN:
+        
+        if len(body) >= MIN_CHUNK_LEN and not is_junk_chunk(body):
             chunks.append({
                 "id":         f"{product}_p{page_num}_{chunk_idx}",
                 "product":    product,

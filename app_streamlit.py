@@ -32,67 +32,26 @@ TIMEOUT_SYNC   = 180
 # ── System Prompts por modo ───────────────────────────────────────────────────
 
 PROMPTS = {
-    "tecnico": """Eres un ingeniero técnico experto en instrumentos de medición HIOKI.
-Tu fuente es el [CONTEXTO DEL MANUAL] a continuación.
+    "integral": """Eres el Asistente Experto HIOKI. Tu objetivo es brindar respuestas CONCISAS, PRECISAS y SIN ALUCINACIONES basadas ESTRICTAMENTE en el [CONTEXTO DEL MANUAL] provisto.
 
-REGLAS:
-1. Responde con datos EXACTOS del contexto: valores numéricos, unidades, procedimientos paso a paso.
-2. Si la pregunta es sobre especificaciones, cita el valor exacto (ej: "60,00 mA", "CAT III 300V").
-3. Si hay un procedimiento, lista los pasos en orden.
-4. Si el dato no está en el contexto: dilo claramente y sugiere dónde podría encontrarse.
-5. NO empieces con un número suelto. Responde en el idioma de la pregunta.""",
-
-    "ventas": """Eres un asesor comercial experto en instrumentos de medición HIOKI.
-Tu fuente es el [CONTEXTO DEL MANUAL] a continuación.
-
-REGLAS:
-1. Responde pensando en el cliente: beneficios, casos de uso, perfil del comprador ideal.
-2. Para "¿a quién se recomienda?": identifica el tipo de profesional o industria según las aplicaciones del instrumento.
-3. Para "¿qué ventajas tiene?": destaca las características diferenciadoras del contexto.
-4. Para "¿cuál es mejor?": compara basándote en los datos del contexto de cada producto.
-5. Puedes razonar y hacer recomendaciones siempre que se basen en el contexto.
-6. Si el contexto no tiene suficiente info para comparar, dilo y describe lo que sí sabes.
-7. Responde en el idioma de la pregunta.""",
-
-    "diagnostico": """Eres un experto en diagnóstico y selección de instrumentos HIOKI.
-Tu fuente es el [CONTEXTO DEL MANUAL] a continuación.
-
-REGLAS:
-1. El usuario describió un problema o necesidad. Tu trabajo es recomendar el equipo o función correcta.
-2. Analiza el contexto de TODOS los productos mencionados y selecciona el más adecuado.
-3. Estructura tu respuesta así:
-   - PROBLEMA IDENTIFICADO: resume el problema del usuario
-   - EQUIPO RECOMENDADO: nombre del producto y por qué
-   - CÓMO USARLO: pasos clave del manual para ese caso
-   - ALTERNATIVAS: si hay otro equipo que también podría servir
-4. Si ningún equipo del contexto resuelve el problema, dilo claramente.
-5. Responde en el idioma de la pregunta."""
+REGLAS CRÍTICAS (DE CUMPLIMIENTO OBLIGATORIO):
+1. RESTRICCIÓN DE ORIGEN: Basa tu respuesta en el contexto. Si el contexto aportado definitivamente no sirve para responder ni siquiera parcialmente, di EXACTAMENTE: "No tengo información en los manuales sobre esto." ¡NO inventes datos técnicos!
+2. DEDUCCIÓN DE VENTAJAS (OBLIGATORIA): Si te piden ventajas, características o beneficios, DEBES analizar el contexto y transformar las especificaciones técnicas en beneficios prácticos para el usuario (ej. "Rango hasta 600A" -> "Permite medir altas corrientes en entornos industriales"). Recuerda que los equipos HIOKI detectan o miden, NO alteran la física. No pongas excusas ni frases introductorias, DA LA LISTA DIRECTAMENTE.
+3. CONCISIÓN EXTREMA: Ve directo al grano desde la primera palabra. NO uses frases introductorias como "Basado en el manual..." o "Las ventajas son". Usa listas (viñetas).
+4. PRECISIÓN DE ESPECIFICACIONES: Usa las cifras exactas del contexto. ADVERTENCIA: No confundas la descripción teórica de un concepto (ej. la teoría global de las Categorías de Medición CAT II, III, IV) con la especificación del equipo. Fíjate exclusivamente en lo que el manual afirme que el equipo SÍ cumple (ej. "Este instrumento cumple con CAT...").
+5. REFERENCIA AL FINAL: Siempre, al final de tu respuesta, añade la fuente con este formato: "Fuente: [Etiqueta_del_producto | p.XX]". OJO: Si tu respuesta fue "No tengo información...", ENTONCES NO PONGAS LA FUENTE."""
 }
 
 MODE_CONFIG = {
-    "tecnico":     {"icon": "🔧", "label": "Técnico",     "color": "#3b82f6", "multi": False},
-    "ventas":      {"icon": "💼", "label": "Ventas",      "color": "#10b981", "multi": True},
-    "diagnostico": {"icon": "🔍", "label": "Diagnóstico", "color": "#f59e0b", "multi": True},
+    "integral": {"icon": "🌟", "label": "Integral", "color": "#8b5cf6", "multi": True},
 }
 
 QUICK_QUESTIONS = {
-    "tecnico": [
-        "¿Cuál es el rango mínimo y máximo de corriente?",
+    "integral": [
+        "¿Cuáles son las principales ventajas de este equipo?",
         "¿Qué categoría CAT tiene y qué significa?",
-        "¿Cómo se usa la función HOLD?",
-        "¿Qué tipo de baterías usa y cuántas?",
-    ],
-    "ventas": [
+        "Tengo disparos intermitentes en un diferencial, ¿qué equipo usar?",
         "¿A qué tipo de cliente le recomendarías este equipo?",
-        "¿Cuáles son las principales ventajas de este instrumento?",
-        "¿Qué lo diferencia de otros medidores de corriente?",
-        "¿Para qué industrias es ideal?",
-    ],
-    "diagnostico": [
-        "Necesito detectar fugas en un circuito trifásico industrial",
-        "Tengo disparos intermitentes en un interruptor diferencial",
-        "Quiero medir corriente de arranque de un motor",
-        "Necesito transferir datos de medición directamente a Excel",
     ],
 }
 
@@ -317,7 +276,7 @@ section[data-testid="stSidebar"] {
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "mode" not in st.session_state:
-    st.session_state.mode = "tecnico"
+    st.session_state.mode = "integral"
 if "last_sources" not in st.session_state:
     st.session_state.last_sources = []
 if "product_filter" not in st.session_state:
@@ -377,7 +336,7 @@ with st.sidebar:
     # Filtro de producto
     st.markdown("**Filtrar por producto**")
     prod_options = ["Todos los productos"] + (index.products if index and hasattr(index, 'products') else list(products.keys()))
-    selected_prod = st.selectbox("", prod_options, label_visibility="collapsed")
+    selected_prod = st.selectbox("Seleccione producto", prod_options, label_visibility="collapsed")
     st.session_state.product_filter = None if selected_prod == "Todos los productos" else selected_prod
 
     st.divider()
@@ -386,11 +345,11 @@ with st.sidebar:
     st.markdown("**Modelo**")
     if ollama_ok:
         st.markdown('<span style="color:#10b981;font-size:0.8rem">● Ollama activo</span>', unsafe_allow_html=True)
-        model_name = st.selectbox("", models, label_visibility="collapsed",
+        model_name = st.selectbox("Seleccione modelo", models, label_visibility="collapsed",
                                    index=next((i for i, m in enumerate(models) if "llama3.2" in m), 0))
     else:
         st.markdown('<span style="color:#ef4444;font-size:0.8rem">● Ollama no disponible</span>', unsafe_allow_html=True)
-        model_name = st.text_input("", value=DEFAULT_MODEL, label_visibility="collapsed")
+        model_name = st.text_input("Modelo no disponible", value=DEFAULT_MODEL, label_visibility="collapsed")
 
     cpu_mode = st.toggle("Modo CPU", value=True, help="Reduce contexto para CPUs lentas")
 
@@ -429,9 +388,7 @@ st.markdown(f"""
   <div>
     <div style="color:#f8fafc;font-size:1.1rem;font-weight:600">Modo {mode_cfg['label']}</div>
     <div style="color:#64748b;font-size:0.78rem">
-      {'Especificaciones exactas y procedimientos técnicos' if st.session_state.mode == 'tecnico' else
-       'Recomendaciones comerciales y perfil de cliente' if st.session_state.mode == 'ventas' else
-       'Diagnóstico de problemas y selección de equipo'}
+      Asistencia experta combinando especificaciones técnicas, enfoque comercial y diagnóstico preciso.
     </div>
   </div>
   {'<span style="margin-left:auto;background:#1e293b;border:1px solid #334155;color:#94a3b8;font-size:0.7rem;padding:4px 10px;border-radius:20px;font-family:IBM Plex Mono">Multi-producto</span>' if mode_cfg['multi'] else ''}
@@ -459,11 +416,9 @@ with st.form("chat_form", clear_on_submit=True):
     col_q, col_btn = st.columns([6, 1])
     with col_q:
         placeholder_map = {
-            "tecnico":     "Ej: ¿Cuál es la categoría CAT del CM4001?",
-            "ventas":      "Ej: ¿A qué tipo de cliente le recomendarías este equipo?",
-            "diagnostico": "Ej: Tengo disparos intermitentes en un diferencial, ¿qué equipo usar?",
+            "integral": "Ej: Tengo disparos intermitentes, ¿qué equipo usar y qué características tiene?",
         }
-        user_input = st.text_input("", placeholder=placeholder_map[st.session_state.mode],
+        user_input = st.text_input("Ingresa tu pregunta", placeholder=placeholder_map[st.session_state.mode],
                                     label_visibility="collapsed")
     with col_btn:
         submitted = st.form_submit_button("→", type="primary", use_container_width=True)
