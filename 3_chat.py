@@ -1,11 +1,14 @@
 """
-PASO 3: CHAT v3 — RAG anti-alucinacion con Ollama
-==================================================
+3_chat.py — SucoBot CLI | RAG anti-alucinacion con Ollama
+=========================================================
+Asistente técnico-comercial HIOKI en modo terminal.
+Detecta automáticamente saludos vs preguntas técnicas/comerciales.
+
 Uso:
     python 3_chat.py
-    python 3_chat.py --model llama3.2
-    python 3_chat.py --debug       <- muestra contexto enviado al LLM
-    python 3_chat.py --extract     <- extrae datos estructurados
+    python 3_chat.py --model qwen2.5:14b
+    python 3_chat.py --debug
+    python 3_chat.py --extract
 """
 
 import argparse
@@ -21,47 +24,98 @@ from index_utils import TFIDFIndex   # necesario para deserializar pickle
 
 
 OLLAMA_URL    = "http://localhost:11434/api/generate"
-DEFAULT_MODEL = "llama3.2"
+DEFAULT_MODEL = "qwen2.5:14b"        # ~9GB RAM cuantizado — ideal para 128GB CPU
 INDEX_FILE    = Path("output/index.pkl")
-TOP_K_CONTEXT = 6           # mas contexto = mejor cobertura
-MAX_CONTEXT_CHARS = 4000
+TOP_K_CONTEXT = 6
+MAX_CONTEXT_CHARS = 3500
 
 
-# ── SYSTEM PROMPT ─────────────────────────────────────────────────────────────
-# Disenado para:
-#   - Forzar al modelo a usar SOLO el contexto dado
-#   - Responder con datos exactos del manual
-#   - No inventar cuando no sabe
-#   - Manejar preguntas vagas expandiendolas el mismo
-SYSTEM_PROMPT = """Eres un asistente tecnico especializado en manuales de instrumentos HIOKI.
+# ── Detección de intención casual ─────────────────────────────────────────────
 
-Tu unica fuente de informacion es el texto que aparece dentro del bloque
-[CONTEXTO DEL MANUAL] en cada mensaje. Ese texto fue extraido directamente del manual oficial.
+CASUAL_PATTERNS = re.compile(
+    r'^\s*(hola|hey|buenas?|buenos?\s*(días?|tardes?|noches?)|'
+    r'que\s*tal|como\s*est(as?|á)|buen\s*día|saludos?|hi\b|hello\b|'
+    r'gracias?|thank|adios?|chao|hasta\s*(luego|pronto|mañana)|'
+    r'quien\s*(eres?|es\s*usted)|como\s*te\s*llamas?|tu\s*nombre|'
+    r'que\s*(eres?|haces?|puedes?)|para\s*que\s*sirves?|'
+    r'ayuda|help\b|que\s*sabes?)\s*[?!.]*\s*$',
+    re.IGNORECASE | re.UNICODE
+)
 
-REGLAS OBLIGATORIAS:
+def is_casual(text: str) -> bool:
+    return bool(CASUAL_PATTERNS.match(text.strip()))
 
-REGLA 1 — RESPONDE SOLO CON EL CONTEXTO
-Usa exclusivamente la informacion del bloque [CONTEXTO DEL MANUAL].
-No uses conocimiento externo. No supongas ni completes con logica propia.
 
-REGLA 2 — SI LA RESPUESTA ESTA EN EL CONTEXTO, RESPONDELA
-Lee el contexto completo antes de responder. Si la informacion esta ahi,
-aunque sea parcialmente, respondela con los datos exactos que aparecen.
+def casual_response(text: str) -> str:
+    t = text.lower().strip()
+    if re.search(r'quien|llamas?|nombre|eres?|que\s*haces?|para\s*que|que\s*sabes?|puedes?', t):
+        return (
+            "¡Hola! Soy SucoBot 🤖, el asistente técnico-comercial de Suco\n"
+            "especializado en instrumentos de medición HIOKI.\n\n"
+            "Puedo ayudarte con:\n"
+            "  🔧 Especificaciones técnicas — rangos, CAT, funciones, dimensiones\n"
+            "  💼 Asesoría comercial       — qué equipo recomendar, ventajas\n"
+            "  🔍 Diagnóstico              — qué instrumento usar según el problema\n\n"
+            "¿Sobre qué equipo HIOKI quieres saber?"
+        )
+    if re.search(r'gracias?|thank', t):
+        return "¡Con gusto! Si tienes más preguntas sobre HIOKI, aquí estoy. 🤝"
+    if re.search(r'adios?|chao|hasta', t):
+        return "¡Hasta luego! Vuelve cuando tengas consultas sobre HIOKI. 👋"
+    if re.search(r'ayuda|help', t):
+        return (
+            "Puedes preguntarme cosas como:\n"
+            "  • ¿Cuál es el rango de medición de la CM4001?\n"
+            "  • ¿Qué equipo uso para un tablero CAT III?\n"
+            "  • ¿Cuáles son las ventajas de la pinza amperimétrica HIOKI?\n\n"
+            "¿Por dónde empezamos?"
+        )
+    return (
+        "¡Hola! Soy SucoBot ⚡, tu asistente HIOKI.\n"
+        "Listo para responder preguntas técnicas o comerciales.\n"
+        "¿En qué te puedo ayudar?"
+    )
 
-REGLA 3 — SI NO ESTA EN EL CONTEXTO, DI EXACTAMENTE ESTO
-"Esta informacion no aparece en el fragmento del manual disponible."
-No digas "probablemente", "generalmente" ni inventes datos.
 
-REGLA 4 — DATOS TECNICOS: CITA VALORES EXACTOS
-Para rangos, voltajes, dimensiones, categorias: copia el valor EXACTO del contexto.
+# ── System Prompt SucoBot ─────────────────────────────────────────────────────
+
+SYSTEM_PROMPT = """Eres SucoBot, el asistente técnico-comercial de Suco especializado en instrumentos de medición HIOKI.
+Tu personalidad: profesional, directo, confiable. Respondes tanto preguntas técnicas como comerciales.
+
+REGLAS CRÍTICAS — DE CUMPLIMIENTO OBLIGATORIO:
+
+REGLA 1 — SOLO USA EL CONTEXTO
+Responde ÚNICAMENTE con información del bloque [CONTEXTO DEL MANUAL].
+No uses conocimiento externo. No inventes datos técnicos, rangos ni especificaciones.
+
+REGLA 2 — SI ESTÁ EN EL CONTEXTO, RESPÓNDELO
+Lee TODO el contexto antes de responder. Si la información está aunque sea parcialmente, úsala.
+
+REGLA 3 — SI NO ESTÁ EN EL CONTEXTO
+Di exactamente: "No tengo esa información en los manuales disponibles."
+Nunca uses "probablemente", "generalmente" ni completes con suposiciones.
+
+REGLA 4 — DATOS TÉCNICOS: VALORES EXACTOS
+Copia los valores exactos del contexto: rangos, voltajes, dimensiones, categorías.
 Ejemplo correcto: "mide desde 0,60 mA hasta 600,0 A"
-Ejemplo incorrecto: "mide corrientes pequeñas hasta grandes"
+Ejemplo incorrecto: "mide corrientes pequeñas y grandes"
 
-REGLA 5 — RESPONDE EN EL IDIOMA DE LA PREGUNTA
+REGLA 5 — VENTAJAS Y RECOMENDACIONES COMERCIALES
+Cuando te pregunten ventajas, beneficios o a quién recomendar:
+Transforma especificaciones en beneficios prácticos para el cliente.
+Ejemplo: "Rango AUTO hasta 600A → apto para entornos industriales sin reconfigurar el equipo"
+Da la lista directamente, sin frases introductorias.
 
-REGLA 6 — SE DIRECTO
-Primero da la respuesta. Luego el detalle si es necesario. Sin introducciones."""
+REGLA 6 — FUENTE AL FINAL
+Termina siempre con: "Fuente: [PRODUCTO | p.XX]"
+Si respondiste "No tengo información...", NO pongas fuente.
 
+REGLA 7 — CONCISIÓN
+Ve directo al grano. Sin introducciones. Usa viñetas cuando aplique.
+Responde en el idioma de la pregunta."""
+
+
+# ── Ollama ────────────────────────────────────────────────────────────────────
 
 def check_ollama(model: str) -> bool:
     try:
@@ -70,13 +124,14 @@ def check_ollama(model: str) -> bool:
             data = json.loads(resp.read())
             models = [m["name"] for m in data.get("models", [])]
             if not any(model in m for m in models):
-                print(f"Modelo '{model}' no encontrado. Disponibles: {models}")
-                print(f"Instala con: ollama pull {model}")
+                print(f"Modelo '{model}' no encontrado.")
+                print(f"  Disponibles: {models}")
+                print(f"  Instala con: ollama pull {model}")
                 return False
             return True
     except Exception as e:
         print(f"Ollama no responde: {e}")
-        print("Inicia con: ollama serve")
+        print("  Inicia con: ollama serve")
         return False
 
 
@@ -86,16 +141,15 @@ def query_ollama(prompt: str, model: str, stream: bool = True) -> str:
         "prompt": prompt,
         "stream": stream,
         "options": {
-            "temperature":    0.0,   # deterministico - maximo rigor
-            "top_p":          1.0,
+            "temperature":    0.1,
             "num_predict":    512,
-            "repeat_penalty": 1.15,
+            "num_ctx":        3072,
+            "repeat_penalty": 1.1,
         }
     }).encode("utf-8")
 
     req = urllib.request.Request(
-        OLLAMA_URL,
-        data=payload,
+        OLLAMA_URL, data=payload,
         headers={"Content-Type": "application/json"},
         method="POST"
     )
@@ -104,7 +158,7 @@ def query_ollama(prompt: str, model: str, stream: bool = True) -> str:
     try:
         with urllib.request.urlopen(req, timeout=120) as resp:
             if stream:
-                print("\nRespuesta: ", end="", flush=True)
+                print("\nSucoBot: ", end="", flush=True)
                 for line in resp:
                     if line:
                         chunk = json.loads(line.decode("utf-8"))
@@ -122,37 +176,29 @@ def query_ollama(prompt: str, model: str, stream: bool = True) -> str:
     return full
 
 
+# ── RAG ───────────────────────────────────────────────────────────────────────
+
 def format_context(results: list[dict]) -> str:
-    """
-    Formatea los chunks como contexto legible.
-    Incluye seccion y pagina como referencia para el modelo.
-    """
     if not results:
         return "No se encontraron fragmentos relevantes."
-
     parts = []
     total = 0
-
     for r in results:
         if total >= MAX_CONTEXT_CHARS:
             break
-
-        header = f"[Seccion: {r['section']} | Pagina {r['page']}]"
-
+        label = f"[{r.get('product','?')} | {r['section']} | p.{r['page']}]"
         if r["type"] == "table":
-            body = f"TABLA — Columnas: {' | '.join(r.get('headers', []))}\n"
+            body = f"TABLA — {' | '.join(r.get('headers', []))}\n"
             for row in r.get("rows", [])[:10]:
                 row_str = " | ".join(f"{k}: {v}" for k, v in row.items() if str(v).strip())
                 if row_str:
                     body += row_str + "\n"
         else:
             body = r["content"]
-
-        block = f"{header}\n{body}"
+        block = f"{label}\n{body}"
         remaining = MAX_CONTEXT_CHARS - total
         parts.append(block[:remaining])
         total += len(block)
-
     return "\n\n---\n\n".join(parts)
 
 
@@ -168,12 +214,15 @@ Pregunta: {question}
 Respuesta:"""
 
 
+# ── Chat interactivo ──────────────────────────────────────────────────────────
+
 def run_chat(index: TFIDFIndex, model: str, debug: bool) -> None:
-    print("\n" + "="*60)
-    print("  ASISTENTE TECNICO — MANUAL HIOKI CM4001")
-    print("="*60)
+    print("\n" + "="*62)
+    print("  SucoBot ⚡ — Asistente Técnico-Comercial HIOKI")
+    print("="*62)
+    print("  Pregunta lo que quieras: técnico, comercial o saluda.")
     print("  Comandos: 'fuentes' | 'contexto' | 'salir'")
-    print("="*60)
+    print("="*62)
 
     last_sources = []
     last_context = ""
@@ -181,27 +230,41 @@ def run_chat(index: TFIDFIndex, model: str, debug: bool) -> None:
     while True:
         try:
             print()
-            q = input("Tu pregunta: ").strip()
+            q = input("Tú: ").strip()
         except (KeyboardInterrupt, EOFError):
-            print("\nHasta luego.")
+            print("\nSucoBot: ¡Hasta luego! 👋")
             break
 
         if not q:
             continue
-        if q.lower() in ("salir", "exit"):
-            print("Hasta luego.")
+        if q.lower() in ("salir", "exit", "quit"):
+            print("SucoBot: ¡Hasta luego! 👋")
             break
         if q.lower() == "fuentes":
-            for s in last_sources:
-                print(f"  [p{s['page']}] {s['section']} (score={s['score']})")
+            if last_sources:
+                for s in last_sources:
+                    tipo = "TABLA" if s.get("type") == "table" else "TEXTO"
+                    print(f"  [{tipo}] {s.get('product','?')} p.{s['page']} | {s['section']} (score={s['score']})")
+            else:
+                print("  Sin fuentes disponibles.")
             continue
         if q.lower() == "contexto":
-            print("\n" + "-"*50)
-            print(last_context)
-            print("-"*50)
+            if last_context:
+                print("-" * 50)
+                print(last_context[:1000])
+                print("-" * 50)
+            else:
+                print("  Sin contexto disponible.")
             continue
 
-        # Buscar con expansion de query
+        # Detectar casual
+        if is_casual(q):
+            print(f"\nSucoBot: {casual_response(q)}")
+            last_sources = []
+            last_context = ""
+            continue
+
+        # RAG técnico/comercial
         results = index.search(q, top_k=TOP_K_CONTEXT)
         last_sources = results
 
@@ -209,55 +272,43 @@ def run_chat(index: TFIDFIndex, model: str, debug: bool) -> None:
         last_context = context
 
         if debug:
-            print(f"\n[DEBUG] Tokens query: {__import__('index_utils').tokenize(q)}")
-            print(f"[DEBUG] Paginas: {[r['page'] for r in results]}")
+            from index_utils import tokenize
+            print(f"\n[DEBUG] Tokens: {tokenize(q)}")
+            print(f"[DEBUG] Páginas: {[(r.get('product'), r['page']) for r in results]}")
 
         if results:
+            prods = list(dict.fromkeys(r.get("product", "?") for r in results))
             pages = list(dict.fromkeys(f"p{r['page']}" for r in results))
-            print(f"Contexto: {' | '.join(pages)}")
+            print(f"Contexto: {' | '.join(prods)} — {' · '.join(pages)}")
 
         prompt = build_prompt(q, context)
         query_ollama(prompt, model, stream=True)
 
 
-# ── Extraccion estructurada ────────────────────────────────────────────────────
+# ── Extracción estructurada ───────────────────────────────────────────────────
 
 FIELDS = [
-    {
-        "field":  "tipo_instrumento",
-        "query":  "pinza amperimetrica fugas CA descripcion producto tipo instrumento",
-        "task":   'Extrae el tipo exacto del instrumento. JSON: {"tipo": "...", "descripcion_corta": "..."}'
-    },
-    {
-        "field":  "rango_corriente",
-        "query":  "rango medicion corriente minimo maximo mA amperios",
-        "task":   'Extrae rango de medicion. JSON: {"minimo": "...", "maximo": "...", "unidad": "..."}'
-    },
-    {
-        "field":  "categoria_medicion",
-        "query":  "categoria medicion CAT voltaje clasificacion seguridad",
-        "task":   'Extrae categoria CAT y voltaje. JSON: {"categoria": "...", "voltaje_v": "..."}'
-    },
-    {
-        "field":  "diametro_mordaza",
-        "query":  "diametro maximo mordaza abrazadera milimetros cable",
-        "task":   'Extrae diametro maximo. JSON: {"diametro_max_mm": "..."}'
-    },
-    {
-        "field":  "rangos_secuencia",
-        "query":  "rangos AUTO mA amperios secuencia RANGE tecla",
-        "task":   'Lista los rangos en orden. JSON: {"rangos": ["60,00 mA", "600,0 mA", ...]}'
-    },
-    {
-        "field":  "bluetooth",
-        "query":  "comunicacion inalambrica bluetooth Z3210 GENNECT metros frecuencia",
-        "task":   'Extrae datos bluetooth. JSON: {"adaptador": "...", "app": "...", "frecuencia_ghz": "...", "rango_m": "..."}'
-    },
-    {
-        "field":  "funciones",
-        "query":  "funciones principales caracteristicas capacidades instrumento medicion",
-        "task":   'Lista funciones principales. JSON: {"funciones": ["...", "..."]}'
-    },
+    {"field": "tipo_instrumento",
+     "query": "pinza amperimetrica fugas CA descripcion producto tipo instrumento",
+     "task":  'JSON: {"tipo": "...", "descripcion_corta": "..."}'},
+    {"field": "rango_corriente",
+     "query": "rango medicion corriente minimo maximo mA amperios",
+     "task":  'JSON: {"minimo": "...", "maximo": "...", "unidad": "..."}'},
+    {"field": "categoria_medicion",
+     "query": "categoria medicion CAT voltaje clasificacion seguridad",
+     "task":  'JSON: {"categoria": "...", "voltaje_v": "..."}'},
+    {"field": "diametro_mordaza",
+     "query": "diametro maximo mordaza abrazadera milimetros cable",
+     "task":  'JSON: {"diametro_max_mm": "..."}'},
+    {"field": "rangos_secuencia",
+     "query": "rangos AUTO mA amperios secuencia RANGE tecla",
+     "task":  'JSON: {"rangos": ["60,00 mA", "600,0 mA", ...]}'},
+    {"field": "bluetooth",
+     "query": "comunicacion inalambrica bluetooth Z3210 GENNECT metros frecuencia",
+     "task":  'JSON: {"adaptador": "...", "app": "...", "frecuencia_ghz": "...", "rango_m": "..."}'},
+    {"field": "funciones",
+     "query": "funciones principales caracteristicas capacidades instrumento medicion",
+     "task":  'JSON: {"funciones": ["...", "..."]}'},
 ]
 
 
@@ -278,17 +329,14 @@ def extract_json(text: str) -> dict:
 
 
 def run_extraction(index: TFIDFIndex, model: str) -> None:
-    print("\n" + "="*60)
-    print("  EXTRACCION DE DATOS ESTRUCTURADOS")
-    print("="*60)
-
+    print("\n" + "="*62)
+    print("  SucoBot — EXTRACCIÓN DE DATOS ESTRUCTURADOS")
+    print("="*62)
     data = {}
     for fd in FIELDS:
         print(f"  Extrayendo: {fd['field']}...", end=" ", flush=True)
-
         results = index.search(fd["query"], top_k=5)
         context = format_context(results)
-
         prompt = f"""{SYSTEM_PROMPT}
 
 [CONTEXTO DEL MANUAL]
@@ -296,11 +344,10 @@ def run_extraction(index: TFIDFIndex, model: str) -> None:
 [FIN DEL CONTEXTO]
 
 Tarea: {fd['task']}
-Responde UNICAMENTE con el JSON pedido. Sin texto adicional. Sin markdown.
-Si el dato no esta en el contexto escribe null.
+Responde ÚNICAMENTE con el JSON pedido. Sin texto adicional. Sin markdown.
+Si el dato no está en el contexto escribe null.
 
 JSON:"""
-
         resp = query_ollama(prompt, model, stream=False)
         data[fd["field"]] = extract_json(resp)
         print("OK")
@@ -308,33 +355,35 @@ JSON:"""
     out = Path("output/extracted_data.json")
     with open(out, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-
     print(f"\nGuardado: {out}")
     print(json.dumps(data, ensure_ascii=False, indent=2))
 
 
+# ── Main ──────────────────────────────────────────────────────────────────────
+
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="SucoBot — Asistente HIOKI CLI")
     parser.add_argument("--extract", action="store_true")
-    parser.add_argument("--model", default=DEFAULT_MODEL)
-    parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--model",   default=DEFAULT_MODEL)
+    parser.add_argument("--debug",   action="store_true")
     args = parser.parse_args()
 
     if not INDEX_FILE.exists():
-        print("Indice no encontrado. Ejecuta:")
-        print("  python 1_extract_pdf.py manuales\\CM4001A966-01.pdf")
+        print("Índice no encontrado. Ejecuta:")
+        print("  python 1_extract_pdf.py manuales/")
         print("  python 2_build_index.py")
         sys.exit(1)
 
-    print("Cargando indice...")
+    print("Cargando índice...")
     with open(INDEX_FILE, "rb") as f:
         index = pickle.load(f)
-    print(f"  {len(index.documents)} documentos")
+    prods = ', '.join(getattr(index, 'products', []))
+    print(f"  {len(index.documents)} documentos | productos: {prods}")
 
     print(f"Verificando Ollama ({args.model})...")
     if not check_ollama(args.model):
         sys.exit(1)
-    print(f"  OK")
+    print("  OK")
 
     if args.extract:
         run_extraction(index, args.model)

@@ -1,10 +1,8 @@
 """
-app_streamlit.py v5 — Asistente HIOKI Multi-Producto
-=====================================================
-Un solo chat con 3 modos:
-  🔧 Técnico   — especificaciones exactas, paso a paso
-  💼 Ventas    — recomendaciones, perfil de cliente, ventajas
-  🔍 Diagnóstico — "tengo este problema → ¿qué equipo uso?"
+app_streamlit.py — SucoBot | Asistente HIOKI Multi-Producto
+============================================================
+Asistente técnico-comercial con personalidad fija.
+Responde saludos, preguntas técnicas y comerciales en un solo modo.
 
 Uso:
     streamlit run app_streamlit.py
@@ -21,39 +19,99 @@ import streamlit as st
 
 
 # ── Config ────────────────────────────────────────────────────────────────────
-INDEX_FILE    = Path("output/index.pkl")
-PRODUCTS_FILE = Path("output/products.json")
-OLLAMA_URL    = "http://localhost:11434/api/generate"
-DEFAULT_MODEL = "llama3.2"
-MAX_CTX_CHARS = 2800
+INDEX_FILE     = Path("output/index.pkl")
+PRODUCTS_FILE  = Path("output/products.json")
+OLLAMA_URL     = "http://localhost:11434/api/generate"
+DEFAULT_MODEL  = "qwen2.5:14b"   # ~9GB RAM cuantizado — ideal para servidor CPU 128GB
+MAX_CTX_CHARS  = 3000
 TIMEOUT_STREAM = 300
-TIMEOUT_SYNC   = 180
 
-# ── System Prompts por modo ───────────────────────────────────────────────────
 
-PROMPTS = {
-    "integral": """Eres el Asistente Experto HIOKI. Tu objetivo es brindar respuestas CONCISAS, PRECISAS y SIN ALUCINACIONES basadas ESTRICTAMENTE en el [CONTEXTO DEL MANUAL] provisto.
+# ── Detección de intención casual ────────────────────────────────────────────
 
-REGLAS CRÍTICAS (DE CUMPLIMIENTO OBLIGATORIO):
-1. RESTRICCIÓN DE ORIGEN: Basa tu respuesta en el contexto. Si el contexto aportado definitivamente no sirve para responder ni siquiera parcialmente, di EXACTAMENTE: "No tengo información en los manuales sobre esto." ¡NO inventes datos técnicos!
-2. DEDUCCIÓN DE VENTAJAS (OBLIGATORIA): Si te piden ventajas, características o beneficios, DEBES analizar el contexto y transformar las especificaciones técnicas en beneficios prácticos para el usuario (ej. "Rango hasta 600A" -> "Permite medir altas corrientes en entornos industriales"). Recuerda que los equipos HIOKI detectan o miden, NO alteran la física. No pongas excusas ni frases introductorias, DA LA LISTA DIRECTAMENTE.
-3. CONCISIÓN EXTREMA: Ve directo al grano desde la primera palabra. NO uses frases introductorias como "Basado en el manual..." o "Las ventajas son". Usa listas (viñetas).
-4. PRECISIÓN DE ESPECIFICACIONES: Usa las cifras exactas del contexto. ADVERTENCIA: No confundas la descripción teórica de un concepto (ej. la teoría global de las Categorías de Medición CAT II, III, IV) con la especificación del equipo. Fíjate exclusivamente en lo que el manual afirme que el equipo SÍ cumple (ej. "Este instrumento cumple con CAT...").
-5. REFERENCIA AL FINAL: Siempre, al final de tu respuesta, añade la fuente con este formato: "Fuente: [Etiqueta_del_producto | p.XX]". OJO: Si tu respuesta fue "No tengo información...", ENTONCES NO PONGAS LA FUENTE."""
-}
+CASUAL_PATTERNS = re.compile(
+    r'^\s*(hola|hey|buenas?|buenos?\s*(días?|tardes?|noches?)|'
+    r'que\s*tal|como\s*est(as?|á)|buen\s*día|saludos?|hi\b|hello\b|'
+    r'gracias?|thank|adios?|chao|hasta\s*(luego|pronto|mañana)|'
+    r'quien\s*(eres?|es\s*usted)|como\s*te\s*llamas?|tu\s*nombre|'
+    r'que\s*(eres?|haces?|puedes?)|para\s*que\s*sirves?|'
+    r'ayuda|help\b|que\s*sabes?)\s*[?!.]*\s*$',
+    re.IGNORECASE | re.UNICODE
+)
 
-MODE_CONFIG = {
-    "integral": {"icon": "🌟", "label": "Integral", "color": "#8b5cf6", "multi": True},
-}
+def is_casual(text: str) -> bool:
+    return bool(CASUAL_PATTERNS.match(text.strip()))
 
-QUICK_QUESTIONS = {
-    "integral": [
-        "¿Cuáles son las principales ventajas de este equipo?",
-        "¿Qué categoría CAT tiene y qué significa?",
-        "Tengo disparos intermitentes en un diferencial, ¿qué equipo usar?",
-        "¿A qué tipo de cliente le recomendarías este equipo?",
-    ],
-}
+
+def casual_response(text: str) -> str:
+    t = text.lower().strip()
+
+    if re.search(r'quien|llamas?|nombre|eres?|que\s*haces?|para\s*que|que\s*sabes?|puedes?', t):
+        return (
+            "¡Hola! Soy **SucoBot** 🤖, el asistente técnico-comercial de **Suco** "
+            "especializado en instrumentos de medición **HIOKI**.\n\n"
+            "Puedo ayudarte con:\n"
+            "- 🔧 **Especificaciones técnicas** — rangos, categorías CAT, funciones, dimensiones\n"
+            "- 💼 **Asesoría comercial** — qué equipo recomendar, ventajas, perfil de cliente\n"
+            "- 🔍 **Diagnóstico** — qué instrumento usar según el problema que describes\n\n"
+            "¿Sobre qué equipo HIOKI quieres saber?"
+        )
+    if re.search(r'gracias?|thank', t):
+        return "¡Con gusto! Si tienes más preguntas sobre los equipos HIOKI, aquí estoy. 🤝"
+    if re.search(r'adios?|chao|hasta', t):
+        return "¡Hasta luego! Cualquier consulta sobre HIOKI, vuelve cuando quieras. 👋"
+    if re.search(r'ayuda|help', t):
+        return (
+            "Claro, estoy aquí para ayudarte. Puedes preguntarme cosas como:\n\n"
+            "- *¿Cuál es el rango de medición de la CM4001?*\n"
+            "- *¿Qué equipo uso para medir corriente de fuga en un tablero CAT III?*\n"
+            "- *¿Cuáles son las ventajas de la pinza amperimétrica HIOKI?*\n\n"
+            "¿Por dónde empezamos?"
+        )
+    # Saludo genérico
+    return (
+        "¡Hola! Soy **SucoBot** ⚡, tu asistente HIOKI.\n\n"
+        "Estoy listo para responder tus preguntas técnicas o comerciales "
+        "sobre instrumentos de medición HIOKI. ¿En qué te puedo ayudar?"
+    )
+
+
+# ── System Prompt SucoBot ─────────────────────────────────────────────────────
+
+SYSTEM_PROMPT = """Eres SucoBot, el asistente técnico-comercial de Suco especializado en instrumentos de medición HIOKI.
+Tu personalidad: profesional, directo, confiable. Respondes tanto preguntas técnicas como comerciales.
+
+REGLAS CRÍTICAS — DE CUMPLIMIENTO OBLIGATORIO:
+
+REGLA 1 — SOLO USA EL CONTEXTO
+Responde ÚNICAMENTE con información del bloque [CONTEXTO DEL MANUAL].
+No uses conocimiento externo. No inventes datos técnicos, rangos ni especificaciones.
+
+REGLA 2 — SI ESTÁ EN EL CONTEXTO, RESPÓNDELO
+Lee TODO el contexto antes de responder. Si la información está aunque sea parcialmente, úsala.
+
+REGLA 3 — SI NO ESTÁ EN EL CONTEXTO
+Di exactamente: "No tengo esa información en los manuales disponibles."
+Nunca uses "probablemente", "generalmente" ni completes con suposiciones.
+
+REGLA 4 — DATOS TÉCNICOS: VALORES EXACTOS
+Copia los valores exactos del contexto: rangos, voltajes, dimensiones, categorías.
+Ejemplo correcto: "mide desde 0,60 mA hasta 600,0 A"
+Ejemplo incorrecto: "mide corrientes pequeñas y grandes"
+
+REGLA 5 — VENTAJAS Y RECOMENDACIONES COMERCIALES
+Cuando te pregunten ventajas, beneficios o a quién recomendar:
+Transforma las especificaciones en beneficios prácticos para el cliente.
+Ejemplo: "Rango AUTO hasta 600A → apto para entornos industriales sin reconfigurar el equipo"
+Da la lista directamente, sin frases introductorias.
+
+REGLA 6 — FUENTE AL FINAL
+Termina siempre con: "Fuente: [PRODUCTO | p.XX]"
+Si respondiste "No tengo información...", NO pongas fuente.
+
+REGLA 7 — CONCISIÓN
+Ve directo al grano. Sin introducciones. Usa viñetas cuando aplique.
+Responde en el idioma de la pregunta."""
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -92,7 +150,7 @@ def format_context(results: list[dict], max_chars: int = MAX_CTX_CHARS) -> str:
     for r in results:
         if total >= max_chars:
             break
-        prod_label = f"[{r.get('product','?')} | {r['section']} | p.{r['page']}]"
+        label = f"[{r.get('product','?')} | {r['section']} | p.{r['page']}]"
         if r["type"] == "table":
             body = f"TABLA — {' | '.join(r.get('headers', []))}\n"
             for row in r.get("rows", [])[:8]:
@@ -101,15 +159,15 @@ def format_context(results: list[dict], max_chars: int = MAX_CTX_CHARS) -> str:
                     body += row_str + "\n"
         else:
             body = r["content"]
-        block = f"{prod_label}\n{body}"
+        block = f"{label}\n{body}"
         remaining = max_chars - total
         parts.append(block[:remaining])
         total += len(block)
     return "\n\n---\n\n".join(parts)
 
 
-def build_prompt(question: str, context: str, mode: str) -> str:
-    return f"""{PROMPTS[mode]}
+def build_prompt(question: str, context: str) -> str:
+    return f"""{SYSTEM_PROMPT}
 
 [CONTEXTO DEL MANUAL]
 {context}
@@ -122,12 +180,20 @@ Respuesta:"""
 
 def query_ollama_stream(prompt: str, model: str):
     payload = json.dumps({
-        "model": model, "prompt": prompt, "stream": True,
-        "options": {"temperature": 0.1, "num_predict": 400, "num_ctx": 2048,
-                    "repeat_penalty": 1.1}
+        "model": model,
+        "prompt": prompt,
+        "stream": True,
+        "options": {
+            "temperature":    0.1,
+            "num_predict":    512,
+            "num_ctx":        3072,
+            "repeat_penalty": 1.1,
+        }
     }).encode("utf-8")
-    req = urllib.request.Request(OLLAMA_URL, data=payload,
-                                  headers={"Content-Type": "application/json"})
+    req = urllib.request.Request(
+        OLLAMA_URL, data=payload,
+        headers={"Content-Type": "application/json"}
+    )
     try:
         with urllib.request.urlopen(req, timeout=TIMEOUT_STREAM) as resp:
             for line in resp:
@@ -137,12 +203,12 @@ def query_ollama_stream(prompt: str, model: str):
                     if chunk.get("done"):
                         break
     except Exception as e:
-        yield f"\n[Error: {e}]"
+        yield f"\n[Error de conexión con Ollama: {e}]"
 
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="HIOKI — Asistente Técnico",
+    page_title="SucoBot — Asistente HIOKI",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -151,14 +217,8 @@ st.set_page_config(
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-
 html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
-
-section[data-testid="stSidebar"] {
-    background: #0a0e1a;
-    border-right: 1px solid #1a2235;
-}
-
+section[data-testid="stSidebar"] { background: #0a0e1a; border-right: 1px solid #1a2235; }
 .hioki-header {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     border: 1px solid #e11d2222;
@@ -175,16 +235,6 @@ section[data-testid="stSidebar"] {
     letter-spacing: 0.1em;
 }
 .hioki-header p { color: #64748b; font-size: 0.78rem; margin: 4px 0 0 0; }
-
-.mode-btn-active {
-    background: #1e293b;
-    border: 2px solid var(--mode-color);
-    border-radius: 8px;
-    padding: 10px 14px;
-    margin: 3px 0;
-    cursor: pointer;
-}
-
 .msg-user {
     background: #0f172a;
     border-left: 3px solid #3b82f6;
@@ -194,9 +244,9 @@ section[data-testid="stSidebar"] {
     color: #e2e8f0;
     font-size: 0.9rem;
 }
-.msg-assistant {
+.msg-bot {
     background: #0d1320;
-    border-left: 3px solid var(--resp-color, #10b981);
+    border-left: 3px solid #e11d22;
     border-radius: 0 8px 8px 0;
     padding: 14px 16px;
     margin: 10px 0;
@@ -205,7 +255,17 @@ section[data-testid="stSidebar"] {
     line-height: 1.7;
     white-space: pre-wrap;
 }
-.msg-mode-badge {
+.msg-casual {
+    background: #0d1320;
+    border-left: 3px solid #8b5cf6;
+    border-radius: 0 8px 8px 0;
+    padding: 14px 16px;
+    margin: 10px 0;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+.bot-badge {
     display: inline-block;
     font-size: 0.65rem;
     padding: 2px 8px;
@@ -213,8 +273,21 @@ section[data-testid="stSidebar"] {
     margin-bottom: 8px;
     font-family: 'IBM Plex Mono', monospace;
     letter-spacing: 0.05em;
+    background: #e11d2222;
+    color: #e11d22;
+    border: 1px solid #e11d2244;
 }
-
+.casual-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    background: #8b5cf622;
+    color: #a78bfa;
+    border: 1px solid #8b5cf644;
+}
 .source-pill {
     display: inline-block;
     background: #1e293b;
@@ -227,7 +300,6 @@ section[data-testid="stSidebar"] {
     margin: 2px;
 }
 .source-pill.table { border-color: #f59e0b44; color: #fbbf24; }
-
 .product-tag {
     display: inline-block;
     background: #1d4ed822;
@@ -239,7 +311,6 @@ section[data-testid="stSidebar"] {
     border-radius: 4px;
     margin: 2px;
 }
-
 .stat-box {
     background: #0f172a;
     border: 1px solid #1e293b;
@@ -247,26 +318,8 @@ section[data-testid="stSidebar"] {
     padding: 10px;
     text-align: center;
 }
-.stat-box .val {
-    font-size: 1.6rem;
-    font-weight: 600;
-    color: #60a5fa;
-    font-family: 'IBM Plex Mono', monospace;
-}
+.stat-box .val { font-size: 1.6rem; font-weight: 600; color: #60a5fa; font-family: 'IBM Plex Mono', monospace; }
 .stat-box .lbl { font-size: 0.65rem; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; }
-
-.quick-q {
-    background: #0f172a;
-    border: 1px solid #1e293b;
-    border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 0.8rem;
-    color: #94a3b8;
-    cursor: pointer;
-    margin: 3px 0;
-    transition: border-color 0.15s;
-}
-
 #MainMenu, footer, header { visibility: hidden; }
 </style>
 """, unsafe_allow_html=True)
@@ -275,18 +328,16 @@ section[data-testid="stSidebar"] {
 # ── Session state ─────────────────────────────────────────────────────────────
 if "messages" not in st.session_state:
     st.session_state.messages = []
-if "mode" not in st.session_state:
-    st.session_state.mode = "integral"
 if "last_sources" not in st.session_state:
     st.session_state.last_sources = []
 if "product_filter" not in st.session_state:
     st.session_state.product_filter = None
 
 
-# ── Load data ─────────────────────────────────────────────────────────────────
-index    = load_index()
-products = load_products()
-models   = get_ollama_models()
+# ── Load ──────────────────────────────────────────────────────────────────────
+index     = load_index()
+products  = load_products()
+models    = get_ollama_models()
 ollama_ok = len(models) > 0
 
 
@@ -294,12 +345,11 @@ ollama_ok = len(models) > 0
 with st.sidebar:
     st.markdown("""
     <div class="hioki-header">
-      <h1>⚡ HIOKI</h1>
-      <p>Asistente Técnico Multi-Producto v5</p>
+      <h1>⚡ SucoBot</h1>
+      <p>Asistente Técnico-Comercial HIOKI</p>
     </div>
     """, unsafe_allow_html=True)
 
-    # Estado
     if index:
         n_docs   = len(index.documents)
         n_prods  = len(index.products) if hasattr(index, 'products') else len(products)
@@ -317,48 +367,35 @@ with st.sidebar:
 
     st.divider()
 
-    # Selector de MODO
-    st.markdown("**Modo de asistencia**")
-    for mode_key, cfg in MODE_CONFIG.items():
-        selected = st.session_state.mode == mode_key
-        label = f"{cfg['icon']} {cfg['label']}"
-        if selected:
-            label = "✓ " + label
-        if st.button(label, key=f"mode_{mode_key}",
-                     type="primary" if selected else "secondary",
-                     use_container_width=True):
-            if st.session_state.mode != mode_key:
-                st.session_state.mode = mode_key
-                st.rerun()
-
-    st.divider()
-
-    # Filtro de producto
     st.markdown("**Filtrar por producto**")
-    prod_options = ["Todos los productos"] + (index.products if index and hasattr(index, 'products') else list(products.keys()))
-    selected_prod = st.selectbox("Seleccione producto", prod_options, label_visibility="collapsed")
+    prod_options = ["Todos los productos"] + (
+        index.products if index and hasattr(index, 'products') else list(products.keys())
+    )
+    selected_prod = st.selectbox("Producto", prod_options, label_visibility="collapsed")
     st.session_state.product_filter = None if selected_prod == "Todos los productos" else selected_prod
 
     st.divider()
 
-    # Modelo Ollama
     st.markdown("**Modelo**")
     if ollama_ok:
         st.markdown('<span style="color:#10b981;font-size:0.8rem">● Ollama activo</span>', unsafe_allow_html=True)
-        model_name = st.selectbox("Seleccione modelo", models, label_visibility="collapsed",
-                                   index=next((i for i, m in enumerate(models) if "llama3.2" in m), 0))
+        default_idx = next(
+            (i for i, m in enumerate(models) if "qwen2.5:14b" in m),
+            next((i for i, m in enumerate(models) if "qwen" in m),
+            next((i for i, m in enumerate(models) if "llama3.2" in m), 0))
+        )
+        model_name = st.selectbox("Modelo", models, label_visibility="collapsed", index=default_idx)
     else:
         st.markdown('<span style="color:#ef4444;font-size:0.8rem">● Ollama no disponible</span>', unsafe_allow_html=True)
-        model_name = st.text_input("Modelo no disponible", value=DEFAULT_MODEL, label_visibility="collapsed")
+        model_name = st.text_input("Modelo", value=DEFAULT_MODEL, label_visibility="collapsed")
 
-    cpu_mode = st.toggle("Modo CPU", value=True, help="Reduce contexto para CPUs lentas")
+    cpu_mode = st.toggle("Modo CPU (contexto reducido)", value=True,
+                          help="Reduce contexto para CPUs sin GPU — recomendado en servidor CPU")
 
     st.divider()
 
-    # Fuentes de la última respuesta
     if st.session_state.last_sources:
         st.markdown("**Fuentes usadas**")
-        max_score = max(r.get("score", 1) for r in st.session_state.last_sources) or 1
         for r in st.session_state.last_sources:
             tipo_class = "table" if r.get("type") == "table" else ""
             tipo_icon  = "📊" if r.get("type") == "table" else "📄"
@@ -377,124 +414,135 @@ with st.sidebar:
         st.rerun()
 
 
-# ── Main chat ─────────────────────────────────────────────────────────────────
-mode_cfg = MODE_CONFIG[st.session_state.mode]
-mode_color = mode_cfg["color"]
-
-# Header del modo actual
-st.markdown(f"""
+# ── Header ────────────────────────────────────────────────────────────────────
+st.markdown("""
 <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #1e293b;margin-bottom:16px">
-  <span style="font-size:1.8rem">{mode_cfg['icon']}</span>
+  <span style="font-size:1.8rem">⚡</span>
   <div>
-    <div style="color:#f8fafc;font-size:1.1rem;font-weight:600">Modo {mode_cfg['label']}</div>
-    <div style="color:#64748b;font-size:0.78rem">
-      Asistencia experta combinando especificaciones técnicas, enfoque comercial y diagnóstico preciso.
-    </div>
+    <div style="color:#f8fafc;font-size:1.1rem;font-weight:600">SucoBot — Asistente HIOKI</div>
+    <div style="color:#64748b;font-size:0.78rem">Preguntas técnicas, comerciales y de diagnóstico sobre instrumentos HIOKI</div>
   </div>
-  {'<span style="margin-left:auto;background:#1e293b;border:1px solid #334155;color:#94a3b8;font-size:0.7rem;padding:4px 10px;border-radius:20px;font-family:IBM Plex Mono">Multi-producto</span>' if mode_cfg['multi'] else ''}
+  <span style="margin-left:auto;background:#1e293b;border:1px solid #334155;color:#94a3b8;font-size:0.7rem;padding:4px 10px;border-radius:20px;font-family:IBM Plex Mono">Multi-producto</span>
 </div>
 """, unsafe_allow_html=True)
 
-# Historial
+
+# ── Historial ─────────────────────────────────────────────────────────────────
 for msg in st.session_state.messages:
     if msg["role"] == "user":
         st.markdown(f'<div class="msg-user">👤 {msg["content"]}</div>', unsafe_allow_html=True)
     else:
-        badge_color = MODE_CONFIG[msg.get("mode", "tecnico")]["color"]
-        badge_label = MODE_CONFIG[msg.get("mode", "tecnico")]["label"]
-        prod_tags = "".join(f'<span class="product-tag">{p}</span>'
-                            for p in msg.get("products", []))
-        st.markdown(
-            f'<div class="msg-assistant" style="--resp-color:{badge_color}">'
-            f'<span class="msg-mode-badge" style="background:{badge_color}22;color:{badge_color};border:1px solid {badge_color}44">'
-            f'{badge_label}</span> {prod_tags}<br>{msg["content"]}</div>',
-            unsafe_allow_html=True
-        )
+        if msg.get("casual"):
+            st.markdown(
+                f'<div class="msg-casual"><span class="casual-badge">SucoBot</span><br>{msg["content"]}</div>',
+                unsafe_allow_html=True
+            )
+        else:
+            prod_tags = "".join(f'<span class="product-tag">{p}</span>' for p in msg.get("products", []))
+            st.markdown(
+                f'<div class="msg-bot"><span class="bot-badge">SucoBot ⚡</span> {prod_tags}<br>{msg["content"]}</div>',
+                unsafe_allow_html=True
+            )
 
-# Input
+
+# ── Input ─────────────────────────────────────────────────────────────────────
 with st.form("chat_form", clear_on_submit=True):
     col_q, col_btn = st.columns([6, 1])
     with col_q:
-        placeholder_map = {
-            "integral": "Ej: Tengo disparos intermitentes, ¿qué equipo usar y qué características tiene?",
-        }
-        user_input = st.text_input("Ingresa tu pregunta", placeholder=placeholder_map[st.session_state.mode],
-                                    label_visibility="collapsed")
+        user_input = st.text_input(
+            "Pregunta",
+            placeholder="Ej: ¿Cuál es el rango de medición? ¿A qué cliente le recomiendo este equipo? o simplemente saluda",
+            label_visibility="collapsed"
+        )
     with col_btn:
         submitted = st.form_submit_button("→", type="primary", use_container_width=True)
 
-# Preguntas rápidas
+QUICK_QUESTIONS = [
+    "¿Qué tipo de instrumento es la CM4001?",
+    "¿Cuáles son sus principales ventajas?",
+    "¿Qué categoría CAT tiene y qué significa?",
+    "Tengo disparos intermitentes en un diferencial, ¿qué equipo usar?",
+]
 st.markdown("**Preguntas rápidas:**")
-quick_cols = st.columns(2)
-quick_qs = QUICK_QUESTIONS[st.session_state.mode]
-for i, q in enumerate(quick_qs):
-    with quick_cols[i % 2]:
+qcols = st.columns(2)
+for i, q in enumerate(QUICK_QUESTIONS):
+    with qcols[i % 2]:
         if st.button(q, key=f"quick_{i}", use_container_width=True):
             user_input = q
             submitted = True
 
 
-# ── Procesar pregunta ─────────────────────────────────────────────────────────
-if submitted and user_input and user_input.strip() and index:
+# ── Procesar ──────────────────────────────────────────────────────────────────
+if submitted and user_input and user_input.strip():
+
     st.session_state.messages.append({"role": "user", "content": user_input})
 
-    mode = st.session_state.mode
-    is_multi = MODE_CONFIG[mode]["multi"]
-    pf = st.session_state.product_filter
+    # Caso 1: Mensaje casual — sin índice, respuesta directa
+    if is_casual(user_input):
+        response = casual_response(user_input)
+        st.session_state.last_sources = []
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": response,
+            "casual": True,
+            "products": [],
+        })
+        st.rerun()
 
-    # Búsqueda
-    stats = index.search_with_stats(
-        user_input, top_k=6,
-        product_filter=pf,
-        multi_product=(is_multi and pf is None)
-    )
-    results = stats["results"]
-    st.session_state.last_sources = results
+    # Caso 2: Pregunta técnica/comercial — RAG
+    elif index:
+        pf = st.session_state.product_filter
 
-    max_chars = 1400 if cpu_mode else MAX_CTX_CHARS
-    context = format_context(results, max_chars)
-
-    # Mostrar productos encontrados
-    prods_found = stats.get("products_found", [])
-    if prods_found:
-        prod_html = " ".join(f'<span class="product-tag">{p}</span>' for p in prods_found)
-        pages = list(dict.fromkeys(f"p{r['page']}" for r in results))
-        st.markdown(
-            f'<div style="margin:4px 0 8px;font-size:0.75rem;color:#64748b">'
-            f'Contexto: {prod_html} — {" · ".join(pages)}</div>',
-            unsafe_allow_html=True
+        stats = index.search_with_stats(
+            user_input,
+            top_k=6,
+            product_filter=pf,
+            multi_product=(pf is None)
         )
+        results = stats["results"]
+        st.session_state.last_sources = results
 
-    prompt = build_prompt(user_input, context, mode)
+        max_chars = 1600 if cpu_mode else MAX_CTX_CHARS
+        context = format_context(results, max_chars)
 
-    with st.spinner(f"Modo {MODE_CONFIG[mode]['label']} — procesando..."):
-        full_response = ""
-        placeholder = st.empty()
+        prods_found = stats.get("products_found", [])
+        if prods_found:
+            prod_html = " ".join(f'<span class="product-tag">{p}</span>' for p in prods_found)
+            pages = list(dict.fromkeys(f"p{r['page']}" for r in results))
+            st.markdown(
+                f'<div style="margin:4px 0 8px;font-size:0.75rem;color:#64748b">'
+                f'Contexto: {prod_html} — {" · ".join(pages)}</div>',
+                unsafe_allow_html=True
+            )
 
-        if ollama_ok:
-            for token in query_ollama_stream(prompt, model_name):
-                full_response += token
+        prompt = build_prompt(user_input, context)
+
+        with st.spinner("SucoBot procesando..."):
+            full_response = ""
+            placeholder = st.empty()
+
+            if ollama_ok:
+                for token in query_ollama_stream(prompt, model_name):
+                    full_response += token
+                    placeholder.markdown(
+                        f'<div class="msg-bot"><span class="bot-badge">SucoBot ⚡</span><br>{full_response}▌</div>',
+                        unsafe_allow_html=True
+                    )
                 placeholder.markdown(
-                    f'<div class="msg-assistant" style="--resp-color:{mode_color}">'
-                    f'{full_response}▌</div>',
+                    f'<div class="msg-bot"><span class="bot-badge">SucoBot ⚡</span><br>{full_response}</div>',
                     unsafe_allow_html=True
                 )
-            placeholder.markdown(
-                f'<div class="msg-assistant" style="--resp-color:{mode_color}">'
-                f'{full_response}</div>',
-                unsafe_allow_html=True
-            )
-        else:
-            full_response = f"[Ollama no disponible] Contexto recuperado:\n\n{context[:600]}..."
-            placeholder.markdown(
-                f'<div class="msg-assistant">{full_response}</div>',
-                unsafe_allow_html=True
-            )
+            else:
+                full_response = f"⚠️ Ollama no disponible.\n\nContexto recuperado:\n\n{context[:800]}..."
+                placeholder.markdown(f'<div class="msg-bot">{full_response}</div>', unsafe_allow_html=True)
 
-    st.session_state.messages.append({
-        "role": "assistant",
-        "content": full_response,
-        "mode": mode,
-        "products": prods_found,
-    })
-    st.rerun()
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": full_response,
+            "casual": False,
+            "products": prods_found,
+        })
+        st.rerun()
+
+    else:
+        st.error("Índice no cargado.\n\n`python 1_extract_pdf.py manuales/`\n\n`python 2_build_index.py`")
