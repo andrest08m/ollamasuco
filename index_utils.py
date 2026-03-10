@@ -1,105 +1,39 @@
 """
-index_utils.py v5
-=================
-BM25 + Reranker multi-producto.
+index_utils.py v6 — Agentic RAG
+=============================
+Semantic Search (MiniLM) + Vector Database (FAISS) + Reranker (FlashRank).
+Multi-producto soportado de forma nativa.
 """
 
 import math
 import re
 import pickle
-from collections import Counter, defaultdict
+import numpy as np
 from pathlib import Path
 
-
-STOPWORDS = {
-    'de','la','el','en','y','a','que','se','del','los','las','un','una',
-    'con','por','para','es','al','lo','su','no','si','o','como','pero',
-    'sus','le','ya','fue','son','este','esta','esto','estos','estas',
-    'cuando','cada','vez','puede','pueden','debe','deben','entre','sobre',
-    'the','of','and','to','in','is','it','for','on','are','this','that',
-    'with','be','not','or','an','at','from','also',
-}
-
-HIGH_PRIORITY_SECTIONS = {
-    'especificaciones','medicion','medición','rango','funcion','función',
-    'caracteristicas','características','seguridad','bluetooth','comunicacion',
-    'descripcion','descripción','comparador','filtro','aplicacion','uso','producto',
-}
-
-
-def tokenize(text: str) -> list[str]:
-    text = re.sub(r'([a-záéíóúüñ])([A-ZÁÉÍÓÚÜ])', r'\1 \2', text)
-    text = text.lower()
-    tokens = re.findall(r'[a-záéíóúüñ0-9]{2,}', text)
-    return [t for t in tokens if t not in STOPWORDS]
+# Nuevas dependencias para RAG Agéntico Semántico
+try:
+    from sentence_transformers import SentenceTransformer
+    import faiss
+    from flashrank import Ranker, RerankRequest
+except ImportError:
+    print("Faltan dependencias. Debes instalar:")
+    print("pip install sentence-transformers faiss-cpu flashrank")
 
 
 def normalize(text: str) -> str:
+    """Conserva el normalizado básico por si se necesita para metadata."""
     return (text.lower()
             .replace('á','a').replace('é','e').replace('í','i')
             .replace('ó','o').replace('ú','u').replace('ñ','n'))
 
 
-def expand_query(query: str) -> str:
-    q = normalize(query)
-    expansions = []
-
-    if any(w in q for w in ['tipo','que es','descripcion','modelo','para que sirve','finalidad','pinza','producto']):
-        expansions += ['descripcion producto tipo instrumento medir aplicacion uso']
-    if any(w in q for w in ['rango','corriente','medir','medicion','amperio','amperaje',
-                              'minimo','minima','maximo','maxima','limite','capacidad','ma ','miliamperio','fuga','sobrecarga']):
-        expansions += ['rango medicion corriente mA amperios minimo maximo especificaciones']
-    if any(w in q for w in ['especificacion','tecnico','tecnica','dato','caracteristica','precision','resolucion']):
-        expansions += ['especificaciones tecnicas rango precision resolucion']
-    if any(w in q for w in ['cat','categoria','voltaje','seguridad','clasificacion','norma','iec']):
-        expansions += ['categoria medicion CAT voltaje clasificacion seguridad']
-    if any(w in q for w in ['comparador','umbral','alarma','alerta','pitido','aviso','comp']):
-        expansions += ['funcion comparador umbral pitido advertencia']
-    if any(w in q for w in ['bluetooth','inalambric','wifi','wireless','z3210','gennect','app','conectar']):
-        expansions += ['comunicacion inalambrica bluetooth adaptador Z3210 GENNECT']
-    if any(w in q for w in ['pila','bateria','alimentacion','aaa','energia']):
-        expansions += ['pilas bateria tipo alimentacion AAA']
-    if any(w in q for w in ['hold','retener','retencion','congelar','pausar']):
-        expansions += ['funcion retencion HOLD congelar lectura']
-    if any(w in q for w in ['filtro','filter','frecuencia','inversor','ruido','hz']):
-        expansions += ['funcion filtro paso bajo frecuencia inversor']
-    if any(w in q for w in ['peso','dimension','tamano','largo','ancho','alto','gramo','mm']):
-        expansions += ['peso dimensiones mm gramos especificaciones fisicas']
-    if any(w in q for w in ['mordaza','apertura','diametro','cable','conductor']):
-        expansions += ['diametro maximo mordaza apertura mm conductor']
-    if any(w in q for w in ['recomendar','para quien','para que persona','util','sirve','uso',
-                              'ventaja','cliente','vender','comprar','elegir','cual es mejor']):
-        expansions += ['descripcion producto aplicacion uso ventajas caracteristicas principales']
-    if any(w in q for w in ['problema','fallo','falla','detectar','identificar','localizar',
-                              'verificar','comprobar','inspeccionar','revisar']):
-        expansions += ['medicion corriente fuga sobrecarga aplicacion inspeccion verificacion']
-    if any(w in q for w in ['diferencia','comparar','vs','versus','mejor','cual','entre',
-                              'alternativa','opcion','similar']):
-        expansions += ['descripcion producto especificaciones rango capacidad aplicacion']
-
-    return query + ' ' + ' '.join(expansions) if expansions else query
-
-
-def _section_boost(section: str, query_tokens: list[str]) -> float:
-    section_lower = section.lower()
-    boost = sum(0.4 for w in HIGH_PRIORITY_SECTIONS if w in section_lower)
-    boost += sum(0.7 for t in query_tokens if len(t) > 3 and t in section_lower)
-    return min(boost, 2.5)
-
-
-def _exact_phrase_boost(content: str, query: str) -> float:
-    words = query.lower().split()
-    c = content.lower()
-    score = sum(1.5 for i in range(len(words)-1)
-                if len(' '.join(words[i:i+3])) > 6 and ' '.join(words[i:i+3]) in c)
-    return min(score, 3.0)
-
-
-def _deduplicate(results: list[dict], threshold: float = 0.65) -> list[dict]:
+def _deduplicate(results: list[dict], threshold: float = 0.85) -> list[dict]:
+    """Elimina fragmentos demasiado similares usando Jaccard en palabras."""
     seen: list[set] = []
     out = []
     for r in results:
-        tokens = set(tokenize(r['content']))
+        tokens = set(r['content'].lower().split())
         if not any(tokens and prev and len(tokens & prev) / len(tokens | prev) > threshold
                    for prev in seen):
             out.append(r)
@@ -107,142 +41,183 @@ def _deduplicate(results: list[dict], threshold: float = 0.65) -> list[dict]:
     return out
 
 
-class TFIDFIndex:
-    def __init__(self, k1: float = 1.5, b: float = 0.75):
+class SemanticIndex:
+    """Índice semántico usando MiniLM, FAISS y FlashRank."""
+    
+    def __init__(self, embedding_model_name: str = 'all-MiniLM-L6-v2'):
         self.documents: list[dict] = []
-        self.tfidf_matrix: list[dict] = []
-        self.idf: dict[str, float] = {}
-        self.k1 = k1
-        self.b = b
-        self.avg_doc_len: float = 0.0
         self.products: list[str] = []
+        self.embedding_model_name = embedding_model_name
+        self.encoder = None
+        self.faiss_index = None
+        self.reranker = None
+        self.is_loaded = False
+
+    def _lazy_init(self):
+        """Inicializa los modelos en memoria solo cuando se van a usar."""
+        if not self.is_loaded:
+            print(f"Cargando modelo de embeddings ({self.embedding_model_name})...")
+            self.encoder = SentenceTransformer(self.embedding_model_name)
+            print("Cargando Reranker (FlashRank)...")
+            self.reranker = Ranker(model_name="ms-marco-TinyBERT-L-2-v2", cache_dir="./output/flashrank_cache")
+            self.is_loaded = True
 
     def build(self, chunks: list[dict], tables: list[dict]) -> None:
-        print("Construyendo índice BM25 v5...")
+        """Construye la base de datos vectorial a partir de datos estructurados."""
+        self._lazy_init()
+        print("Construyendo índice Semántico v6...")
         self.documents = []
 
+        # 1. Preparar Documentos Texto
         for chunk in chunks:
             self.documents.append({
-                "id": chunk["id"], "type": "text",
+                "id": chunk["id"], 
+                "type": "text",
                 "product": chunk.get("product", "UNKNOWN"),
                 "pdf": chunk.get("pdf", ""),
-                "page": chunk["page"], "section": chunk["section"],
+                "page": chunk["page"], 
+                "section": chunk["section"],
                 "content": chunk["text"],
-                "tokens": tokenize(chunk["text"])
             })
 
+        # 2. Preparar Documentos Tablas (Serializadas)
         for table in tables:
             txt = f"Producto: {table.get('product','')}. Seccion: {table['section']}. "
             txt += "Columnas: " + ", ".join(table["headers"]) + ". "
             for row in table["rows"]:
                 txt += " | ".join(f"{k}: {v}" for k, v in row.items() if v) + ". "
             self.documents.append({
-                "id": table["id"], "type": "table",
+                "id": table["id"], 
+                "type": "table",
                 "product": table.get("product", "UNKNOWN"),
                 "pdf": table.get("pdf", ""),
-                "page": table["page"], "section": table["section"],
-                "content": txt, "headers": table.get("headers", []),
-                "rows": table.get("rows", []), "tokens": tokenize(txt)
+                "page": table["page"], 
+                "section": table["section"],
+                "content": txt, 
+                "headers": table.get("headers", []),
+                "rows": table.get("rows", [])
             })
 
         self.products = sorted(set(d["product"] for d in self.documents))
         n_docs = len(self.documents)
-        total_tokens = sum(len(d["tokens"]) for d in self.documents)
-        self.avg_doc_len = total_tokens / n_docs if n_docs else 1.0
 
-        doc_freq: dict[str, int] = defaultdict(int)
-        for doc in self.documents:
-            for t in set(doc["tokens"]):
-                doc_freq[t] += 1
+        # 3. Calcular Embeddings en bloque
+        print(f"Generando embeddings para {n_docs} documentos...")
+        texts = [doc["content"] for doc in self.documents]
+        embeddings = self.encoder.encode(texts, show_progress_bar=True, convert_to_numpy=True)
+        
+        # 4. Construir FAISS Index (Inner Product para similitud coseno)
+        dim = embeddings.shape[1]
+        faiss.normalize_L2(embeddings)  # L2 norm para que IP actúe como Cosine Similarity
+        self.faiss_index = faiss.IndexFlatIP(dim)
+        self.faiss_index.add(embeddings)
 
-        self.idf = {t: math.log((n_docs - f + 0.5) / (f + 0.5) + 1)
-                    for t, f in doc_freq.items()}
+        print(f"  {n_docs} docs indexados | dimensiones: {dim} | productos: {', '.join(self.products)}")
 
-        self.tfidf_matrix = []
-        for doc in self.documents:
-            tf = Counter(doc["tokens"])
-            dl = len(doc["tokens"]) or 1
-            bm25 = {}
-            for term, count in tf.items():
-                idf = self.idf.get(term, 0)
-                num = count * (self.k1 + 1)
-                den = count + self.k1 * (1 - self.b + self.b * dl / self.avg_doc_len)
-                bm25[term] = idf * num / den
-            self.tfidf_matrix.append(bm25)
-
-        print(f"  {n_docs} docs | {len(self.idf)} términos | productos: {', '.join(self.products)}")
-
-    def _bm25_score(self, idx: int, query_tokens: list[str]) -> float:
-        return sum(self.tfidf_matrix[idx].get(t, 0.0) for t in query_tokens)
 
     def search(self, query: str, top_k: int = 6, product_filter: str = None) -> list[dict]:
-        expanded = expand_query(query)
-        qt = tokenize(expanded)
-        if not qt:
+        """Busca y re-ordena documentos basándose puramente en semántica profunda."""
+        self._lazy_init()
+        if not query.strip() or self.faiss_index is None:
             return []
 
+        # 1. Embedding de la consulta
+        q_emb = self.encoder.encode([query], convert_to_numpy=True)
+        faiss.normalize_L2(q_emb)
+
+        # 2. Recuperación Densa Amplia (Buscamos más documentos de los necesarios para luego filtrar y reranquear)
+        retrieve_k = top_k * 4 
+        distances, indices = self.faiss_index.search(q_emb, retrieve_k)
+        
         candidates = []
-        for idx, bm25 in enumerate(self.tfidf_matrix):
+        for i, idx in enumerate(indices[0]):
+            if idx == -1: continue
             doc = self.documents[idx]
             if product_filter and doc["product"] != product_filter:
                 continue
-            score = sum(bm25.get(t, 0.0) for t in qt)
-            if score > 0:
-                candidates.append((idx, score))
+            doc_copy = doc.copy()
+            doc_copy["faiss_score"] = float(distances[0][i])
+            candidates.append(doc_copy)
 
-        candidates.sort(key=lambda x: x[1], reverse=True)
+        if not candidates:
+            return []
 
-        reranked = []
-        for idx, bs in candidates[:top_k * 4]:
-            doc = self.documents[idx]
-            final = bs + _section_boost(doc['section'], qt) + \
-                    _exact_phrase_boost(doc['content'], query) + \
-                    (0.5 if doc['type'] == 'table' else 0.0)
-            reranked.append((idx, bs, final))
+        # 3. Reranking cruzado usando FlashRank
+        # Preparar formato para FlashRank
+        passages = []
+        for doc in candidates:
+            passages.append({
+                "id": doc["id"],
+                "text": doc["content"],
+                "meta": doc
+            })
+            
+        rerankrequest = RerankRequest(query=query, passages=passages)
+        rerank_results = self.reranker.rerank(rerankrequest)
 
-        reranked.sort(key=lambda x: x[2], reverse=True)
+        # 4. Ensamblar resultados finales
+        final_results = []
+        for res in rerank_results:
+            orig_doc = res["meta"]
+            orig_doc["score"] = res["score"] # Score de FlashRank
+            final_results.append(orig_doc)
 
-        results = []
-        for idx, bs, fs in reranked[:top_k * 2]:
-            doc = self.documents[idx].copy()
-            doc["score"] = round(fs, 4)
-            doc["score_bm25"] = round(bs, 4)
-            doc.pop("tokens", None)
-            results.append(doc)
+        return _deduplicate(final_results)[:top_k]
 
-        return _deduplicate(results)[:top_k]
 
-    def search_multi_product(self, query: str, top_k_per_product: int = 3) -> list[dict]:
-        """Trae los mejores chunks de CADA producto para comparaciones."""
-        all_results = []
-        for product in self.products:
-            results = self.search(query, top_k=top_k_per_product, product_filter=product)
-            all_results.extend(results)
-        all_results.sort(key=lambda x: x["score"], reverse=True)
-        return _deduplicate(all_results)
-
-    def search_with_stats(self, query: str, top_k: int = 6,
-                           product_filter: str = None, multi_product: bool = False) -> dict:
-        expanded = expand_query(query)
-        qt = tokenize(expanded)
-        if multi_product:
-            results = self.search_multi_product(query, top_k_per_product=3)
-        else:
-            results = self.search(query, top_k=top_k, product_filter=product_filter)
+    def search_with_stats(self, query: str, top_k: int = 6, product_filter: str = None) -> dict:
+        results = self.search(query, top_k=top_k, product_filter=product_filter)
         return {
-            "results": results, "query_tokens": qt,
-            "expanded": expanded != query,
-            "expanded_query": expanded if expanded != query else None,
+            "results": results, 
+            "query_tokens": len(query.split()),
+            "expanded": False,
+            "expanded_query": None,
             "total_docs": len(self.documents),
             "products_found": list({r["product"] for r in results}),
         }
 
     def save(self, path: Path) -> None:
+        """Guarda FAISS y metadata por separado para evitar problemas de Pickling."""
+        output_dir = path.parent
+        faiss_path = output_dir / "index.faiss"
+        meta_path = output_dir / "metadata.pkl"
+        
+        # Guarda el index en formato binario de FAISS
+        if self.faiss_index is not None:
+            faiss.write_index(self.faiss_index, str(faiss_path))
+            
+        # Guarda los documentos y metadata en formato pickle
+        meta_data = {
+            "documents": self.documents,
+            "products": self.products,
+            "embedding_model_name": self.embedding_model_name
+        }
+        with open(meta_path, "wb") as f:
+            pickle.dump(meta_data, f)
+            
+        # También mantiene un archivo dummy en index.pkl para no quebrar scripts viejos inmediatamente
         with open(path, "wb") as f:
-            pickle.dump(self, f)
-        print(f"Índice guardado: {path}")
+            pickle.dump({"warning": "Index v6 is split in metadata.pkl and index.faiss"}, f)
+            
+        print(f"Índice Semántico guardado: {faiss_path} y {meta_path}")
 
     @classmethod
-    def load(cls, path: Path) -> "TFIDFIndex":
-        with open(path, "rb") as f:
-            return pickle.load(f)
+    def load(cls, path: Path) -> "SemanticIndex":
+        """Reconstruye el objeto desde FAISS + Metadata."""
+        output_dir = path.parent
+        faiss_path = output_dir / "index.faiss"
+        meta_path = output_dir / "metadata.pkl"
+        
+        if not faiss_path.exists() or not meta_path.exists():
+            raise FileNotFoundError(f"No se encontraron los archivos {faiss_path} o {meta_path}. Debes reconstruir el índice (paso 2).")
+            
+        with open(meta_path, "rb") as f:
+            meta_data = pickle.load(f)
+            
+        instance = cls(embedding_model_name=meta_data.get("embedding_model_name", 'all-MiniLM-L6-v2'))
+        instance.documents = meta_data["documents"]
+        instance.products = meta_data["products"]
+        
+        instance.faiss_index = faiss.read_index(str(faiss_path))
+        print("Índice semántico cargado correctamente.")
+        return instance

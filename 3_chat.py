@@ -1,31 +1,29 @@
 """
-3_chat.py — SucoBot CLI | RAG anti-alucinacion con Ollama
-=========================================================
+3_chat.py — SucoBot CLI | RAG Agentic con Ollama
+=================================================
 Asistente técnico-comercial HIOKI en modo terminal.
-Detecta automáticamente saludos vs preguntas técnicas/comerciales.
+Implementa un bucle agéntico interactivo para extracción estructurada.
 
 Uso:
     python 3_chat.py
-    python 3_chat.py --model qwen2.5:14b
+    python 3_chat.py --model qwen2.5:7b-instruct
     python 3_chat.py --debug
     python 3_chat.py --extract
 """
 
 import argparse
 import json
-import pickle
 import re
 import sys
 import urllib.request
 import urllib.error
 from pathlib import Path
 
-from index_utils import TFIDFIndex   # necesario para deserializar pickle
-
+from index_utils import SemanticIndex
 
 OLLAMA_URL    = "http://localhost:11434/api/generate"
-DEFAULT_MODEL = "qwen2.5:14b"        # ~9GB RAM cuantizado — ideal para 128GB CPU
-INDEX_FILE    = Path("output/index.pkl")
+DEFAULT_MODEL = "qwen2.5:7b-instruct"
+INDEX_FILE    = Path("output/index.pkl") 
 TOP_K_CONTEXT = 6
 MAX_CONTEXT_CHARS = 3500
 
@@ -143,7 +141,7 @@ def query_ollama(prompt: str, model: str, stream: bool = True) -> str:
         "options": {
             "temperature":    0.1,
             "num_predict":    512,
-            "num_ctx":        3072,
+            "num_ctx":        4096,
             "repeat_penalty": 1.1,
         }
     }).encode("utf-8")
@@ -156,7 +154,7 @@ def query_ollama(prompt: str, model: str, stream: bool = True) -> str:
 
     full = ""
     try:
-        with urllib.request.urlopen(req, timeout=120) as resp:
+        with urllib.request.urlopen(req, timeout=180) as resp:
             if stream:
                 print("\nSucoBot: ", end="", flush=True)
                 for line in resp:
@@ -216,11 +214,12 @@ Respuesta:"""
 
 # ── Chat interactivo ──────────────────────────────────────────────────────────
 
-def run_chat(index: TFIDFIndex, model: str, debug: bool) -> None:
+def run_chat(index: SemanticIndex, model: str, debug: bool) -> None:
     print("\n" + "="*62)
-    print("  SucoBot ⚡ — Asistente Técnico-Comercial HIOKI")
+    print("  SucoBot ⚡ — Asistente HIOKI (Búsqueda Semántica v6)")
     print("="*62)
     print("  Pregunta lo que quieras: técnico, comercial o saluda.")
+    print(f"  Modelo Activo: {model}")
     print("  Comandos: 'fuentes' | 'contexto' | 'salir'")
     print("="*62)
 
@@ -244,7 +243,8 @@ def run_chat(index: TFIDFIndex, model: str, debug: bool) -> None:
             if last_sources:
                 for s in last_sources:
                     tipo = "TABLA" if s.get("type") == "table" else "TEXTO"
-                    print(f"  [{tipo}] {s.get('product','?')} p.{s['page']} | {s['section']} (score={s['score']})")
+                    # SemanticIndex provee 'score' del Reranker FlashRank
+                    print(f"  [{tipo}] {s.get('product','?')} p.{s['page']} | {s['section']} (FlashRank score={s.get('score', 0):.4f})")
             else:
                 print("  Sin fuentes disponibles.")
             continue
@@ -272,100 +272,126 @@ def run_chat(index: TFIDFIndex, model: str, debug: bool) -> None:
         last_context = context
 
         if debug:
-            from index_utils import tokenize
-            print(f"\n[DEBUG] Tokens: {tokenize(q)}")
-            print(f"[DEBUG] Páginas: {[(r.get('product'), r['page']) for r in results]}")
+            print(f"\n[DEBUG] Páginas encontradas: {[(r.get('product'), r['page']) for r in results]}")
 
         if results:
             prods = list(dict.fromkeys(r.get("product", "?") for r in results))
             pages = list(dict.fromkeys(f"p{r['page']}" for r in results))
-            print(f"Contexto: {' | '.join(prods)} — {' · '.join(pages)}")
+            print(f"Contexto recuperado: {' | '.join(prods)} — {' · '.join(pages)}")
 
         prompt = build_prompt(q, context)
         query_ollama(prompt, model, stream=True)
 
 
-# ── Extracción estructurada ───────────────────────────────────────────────────
+# ── Extracción Estructurada Agéntica (Bucle ReAct) ────────────────────────────────
 
 FIELDS = [
-    {"field": "tipo_instrumento",
-     "query": "pinza amperimetrica fugas CA descripcion producto tipo instrumento",
-     "task":  'JSON: {"tipo": "...", "descripcion_corta": "..."}'},
-    {"field": "rango_corriente",
-     "query": "rango medicion corriente minimo maximo mA amperios",
-     "task":  'JSON: {"minimo": "...", "maximo": "...", "unidad": "..."}'},
-    {"field": "categoria_medicion",
-     "query": "categoria medicion CAT voltaje clasificacion seguridad",
-     "task":  'JSON: {"categoria": "...", "voltaje_v": "..."}'},
-    {"field": "diametro_mordaza",
-     "query": "diametro maximo mordaza abrazadera milimetros cable",
-     "task":  'JSON: {"diametro_max_mm": "..."}'},
-    {"field": "rangos_secuencia",
-     "query": "rangos AUTO mA amperios secuencia RANGE tecla",
-     "task":  'JSON: {"rangos": ["60,00 mA", "600,0 mA", ...]}'},
-    {"field": "bluetooth",
-     "query": "comunicacion inalambrica bluetooth Z3210 GENNECT metros frecuencia",
-     "task":  'JSON: {"adaptador": "...", "app": "...", "frecuencia_ghz": "...", "rango_m": "..."}'},
-    {"field": "funciones",
-     "query": "funciones principales caracteristicas capacidades instrumento medicion",
-     "task":  'JSON: {"funciones": ["...", "..."]}'},
+    {"field": "tipo_instrumento", "task": 'Descripción del producto o tipo de instrumento de medición.'},
+    {"field": "rango_corriente",  "task": 'Rango de medición de corriente ACA (mínimo, máximo, unidad, ejemplo: mA, A).'},
+    {"field": "categoria_medicion", "task": 'Clasificación de seguridad: Categoría de medición CAT (ej. CAT III, CAT IV) y voltaje admitido o listado.'},
+    {"field": "diametro_mordaza", "task": 'Diámetro máximo de la mordaza o el ancho máximo de la barra sensora en milímetros.'},
+    {"field": "comunicacion",     "task": 'Soporte para Bluetooth, módulo o adaptador Z3210 y uso con app Gennect Cross.'},
+    {"field": "funciones_extra",  "task": 'Lista de funciones extras (ej. retención de datos HOLD, filtro de paso bajo, comparador sonoro o zumbador).'},
 ]
 
+AGENT_PROMPT = """Eres el Agente SucoBot de EXTRACCIÓN de datos HIOKI.
+Tu objetivo es recolectar un dato específico de un manual leyendo contexto.
+Debes operar en un bucle mental iterativo usando PENSAMIENTO y ACCION.
+
+Tienes las siguientes herramientas a tu disposición:
+1. SEARCH("texto_a_buscar"): Te permite consultar de nuevo el manual si la información que tienes no es suficiente o no aplica al dato que necesitas.
+2. DONE(json_resultado): Usas esta función cuando estás completamente seguro de que en el contexto actual TIEENS el dato pedido. Debes pasar el JSON como resultado.
+
+REGLAS PARA EL JSON:
+Solo devuelve el valor crudo en código JSON, sin introducciones. Si necesitas buscar datos usa JSON para describir el SEARCH, así:
+{ "action": "SEARCH", "query": "rango de medicion amperaje maximo" } o 
+{ "action": "DONE", "result": { "valor_encontrado": "20V" } } o
+{ "action": "DONE", "result": null } si tras 3 búsquedas no encuentras NADA.
+
+[CONTEXTO RECOPIALDO HASTA AHORA]
+{context}
+
+[TAREA ACTUAL]
+Extraer este dato en formato JSON: {task}
+"""
 
 def extract_json(text: str) -> dict:
-    m = re.search(r'\{[^{}]*\}', text, re.DOTALL)
+    m = re.search(r'\{.*\}', text, re.DOTALL)
     if m:
         try:
             return json.loads(m.group())
         except Exception:
             pass
-    m = re.search(r'\[[^\[\]]+\]', text, re.DOTALL)
-    if m:
-        try:
-            return {"lista": json.loads(m.group())}
-        except Exception:
-            pass
-    return {"raw": text.strip()[:300]}
+    return {}
 
-
-def run_extraction(index: TFIDFIndex, model: str) -> None:
+def run_agentic_extraction(index: SemanticIndex, model: str) -> None:
     print("\n" + "="*62)
-    print("  SucoBot — EXTRACCIÓN DE DATOS ESTRUCTURADOS")
+    print("  SucoBot — AGENTE DE EXTRACCIÓN AUTÓNOMA (Modo ReAct)")
     print("="*62)
     data = {}
+    
+    max_iterations = 3
+    
     for fd in FIELDS:
-        print(f"  Extrayendo: {fd['field']}...", end=" ", flush=True)
-        results = index.search(fd["query"], top_k=5)
-        context = format_context(results)
-        prompt = f"""{SYSTEM_PROMPT}
-
-[CONTEXTO DEL MANUAL]
-{context}
-[FIN DEL CONTEXTO]
-
-Tarea: {fd['task']}
-Responde ÚNICAMENTE con el JSON pedido. Sin texto adicional. Sin markdown.
-Si el dato no está en el contexto escribe null.
-
-JSON:"""
-        resp = query_ollama(prompt, model, stream=False)
-        data[fd["field"]] = extract_json(resp)
-        print("OK")
+        print(f"\n▶ Extrayendo campo: {fd['field']}...")
+        
+        # Búsqueda inicial por nombre del campo
+        accumulated_results = index.search(fd["task"], top_k=3)
+        context = format_context(accumulated_results)
+        
+        iteration = 0
+        final_result = None
+        
+        while iteration < max_iterations:
+            iteration += 1
+            print(f"  Iteración {iteration} [Pensando]...", end=" ", flush=True)
+            
+            prompt = AGENT_PROMPT.replace("{context}", context).replace("{task}", fd["task"])
+            
+            resp = query_ollama(prompt, model, stream=False)
+            response_json = extract_json(resp)
+            
+            action = response_json.get("action", "DONE")
+            
+            if action == "SEARCH":
+                query = response_json.get("query", fd["task"])
+                print(f"[Buscando nuevo contexto: '{query}']")
+                new_results = index.search(query, top_k=3)
+                
+                # Agregar nuevo contexto manteniendo el tamaño bajo control
+                accumulated_results.extend(new_results)
+                # Deduplicar contexto si es necesario (el Semantic Index format_context trunca el string igual)
+                context = format_context(accumulated_results)
+            elif action == "DONE":
+                final_result = response_json.get("result")
+                print(f"[Listo: {final_result}]")
+                break
+            else:
+                # Fallback por si la respuesta no es totalmente estructurada pero tiene info
+                print(f"[Fallback para respuesta cruda]")
+                final_result = {"raw": resp[:200]}
+                break
+                
+        if not final_result:
+            print("  [Agent Timeout: Dato no encontrado]")
+            
+        data[fd["field"]] = final_result
 
     out = Path("output/extracted_data.json")
     with open(out, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-    print(f"\nGuardado: {out}")
+    print(f"\n============================================================")
+    print(f"Extracción finalizada. Guardado: {out}")
     print(json.dumps(data, ensure_ascii=False, indent=2))
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description="SucoBot — Asistente HIOKI CLI")
-    parser.add_argument("--extract", action="store_true")
-    parser.add_argument("--model",   default=DEFAULT_MODEL)
-    parser.add_argument("--debug",   action="store_true")
+    parser = argparse.ArgumentParser(description="SucoBot — Asistente HIOKI CLI v6")
+    parser.add_argument("--extract", action="store_true", help="Inicia extracción autónoma agéntica")
+    parser.add_argument("--model",   default=DEFAULT_MODEL, help="Selecciona el modelo Ollama")
+    parser.add_argument("--debug",   action="store_true", help="Activa modo debug (tiempos y páginas)")
     args = parser.parse_args()
 
     if not INDEX_FILE.exists():
@@ -374,11 +400,16 @@ def main():
         print("  python 2_build_index.py")
         sys.exit(1)
 
-    print("Cargando índice...")
-    with open(INDEX_FILE, "rb") as f:
-        index = pickle.load(f)
+    print("Cargando índice semántico...")
+    try:
+        index = SemanticIndex.load(INDEX_FILE)
+    except Exception as e:
+        print(f"Error cargando índice: {e}")
+        print("Debes ejecutar 'python 2_build_index.py' primero para generar la base factorial.")
+        sys.exit(1)
+        
     prods = ', '.join(getattr(index, 'products', []))
-    print(f"  {len(index.documents)} documentos | productos: {prods}")
+    print(f"  {len(index.documents)} documentos vectoriales | productos: {prods}")
 
     print(f"Verificando Ollama ({args.model})...")
     if not check_ollama(args.model):
@@ -386,7 +417,7 @@ def main():
     print("  OK")
 
     if args.extract:
-        run_extraction(index, args.model)
+        run_agentic_extraction(index, args.model)
     else:
         run_chat(index, args.model, args.debug)
 

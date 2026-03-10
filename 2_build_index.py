@@ -1,7 +1,7 @@
 """
-PASO 2: CONSTRUIR ÍNDICE v5
-============================
-Lee chunks.json + tables.json y construye el índice BM25 multi-producto.
+PASO 2: CONSTRUIR ÍNDICE v6 Semántico
+=====================================
+Lee chunks.json + tables.json y construye el índice embedding multi-producto (FAISS).
 
 Uso:
     python 2_build_index.py
@@ -9,10 +9,10 @@ Uso:
 
 import json
 from pathlib import Path
-from index_utils import TFIDFIndex
+from index_utils import SemanticIndex
 
 OUTPUT_DIR = Path("output")
-INDEX_FILE = OUTPUT_DIR / "index.pkl"
+INDEX_FILE = OUTPUT_DIR / "index.pkl"  # Compatibilidad, creará faiss local
 
 def main():
     chunks_file = OUTPUT_DIR / "chunks.json"
@@ -31,12 +31,12 @@ def main():
 
     print(f"  {len(chunks)} chunks, {len(tables)} tablas")
 
-    index = TFIDFIndex()
+    index = SemanticIndex()
     index.build(chunks, tables)
     index.save(INDEX_FILE)
 
-    print(f"\nÍndice listo: {INDEX_FILE}")
-    print("Ejecuta: streamlit run app_streamlit.py")
+    print(f"\nÍndice listo en: {OUTPUT_DIR}/")
+    print("Ejecuta: python 3_chat.py")
 
 if __name__ == "__main__":
     main()
